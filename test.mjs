@@ -161,6 +161,7 @@ for (const [vn, opt] of Object.entries(vps)) {
   ok.push(['hero: frase do trabalho e botão Agendar conversa no WhatsApp', !!(await p.$('.hero .job')) && cta && cta.txt === 'Agendar conversa' && cta.href === WA + encodeURIComponent(MSG.geral) && cta.t === '_blank' && cta.rel.includes('noopener')]);
   ok.push(['rodapé com e-mail real no mailto', await p.evaluate(() => document.querySelector('.foot__send').href.startsWith('mailto:contato.lucasgehlen@gmail.com'))]);
   ok.push(['nav com abas Currículo e Serviços', await p.evaluate(() => document.querySelector('.top__r [aria-current=page]').textContent === 'Currículo' && !!document.querySelector('.top__r a[href$="servicos/"]'))]);
+  ok.push(['sem Pilar no head, no hero e em Como eu trabalho', await p.evaluate(() => !/pilar/i.test(document.head.innerHTML + document.querySelector('.hero').innerText + document.querySelector('#como-trabalho').innerText))]);
   ok.push(['Como eu trabalho com 4 passos', await p.evaluate(() => document.querySelectorAll('#como-trabalho .how__i').length === 4)]);
   ok.push(['cases com contexto, gargalo e impacto', await p.evaluate(() => { const ms = [...document.querySelectorAll('.r--m')]; return ms.length === 6 && ms.every((m) => [...m.querySelectorAll('.cgi__k')].map((k) => k.textContent).join() === 'contexto,gargalo,impacto'); })]);
   ok.push(['depoimentos escondidos (lista vazia e chave desligada)', await p.evaluate(() => !document.querySelector('.dp') && document.querySelector('.dp-slot').innerHTML.trim() === '')]);
@@ -183,6 +184,7 @@ for (const [vn, opt] of Object.entries(vps)) {
   // serviços
   await p.goto(url + 'servicos/', { waitUntil: 'networkidle' }); await p.waitForTimeout(900);
   ok.push(['Serviços: 6 etapas, agendar com mensagem de IA, sem preço', await p.evaluate(([wa, m]) => document.querySelectorAll('.br__i').length === 6 && [...document.querySelectorAll('[data-agendar]')].every((a) => a.href === wa + encodeURIComponent(m) && a.target === '_blank' && a.rel.includes('noopener')) && !/R\$|\bpreço\b/i.test(document.body.innerText), [WA, MSG.ia])]);
+  ok.push(['Serviços: Pilar só no bloco de experiência', await p.evaluate(() => { const c = document.body.cloneNode(true); c.querySelector('.base').remove(); return !/pilar/i.test(document.head.innerHTML + c.innerText); })]);
   ok.push(['Serviços: aba ativa e volta para o currículo', await p.evaluate(() => document.querySelector('.top__r [aria-current=page]').textContent === 'Serviços' && !!document.querySelector('.top__r a[href="../"]'))]);
   ok.push(['Serviços: sem rolagem horizontal', await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth)]);
   ok.push(['Serviços: nada de Vitrina, Trilha, GitHub', await p.evaluate((re) => !new RegExp(re, 'i').test(document.body.innerText), PROIBIDO.source)]);

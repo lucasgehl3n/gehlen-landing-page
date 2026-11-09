@@ -107,7 +107,7 @@ ${topbar('cv', './')}
     <p class="hero__head"><span class="pulse"></span><code translate="no">HEAD -> main</code> · hoje</p>
     <h1 translate="no">Lucas Gehlen</h1>
     <p class="job">Lidero times de engenharia de produto e ajudo empresas a colocar IA no trabalho do time, uma etapa de cada vez.</p>
-    <p class="line">Hoje sou Tech Lead do PilarHomes. Vejo com produto e design o que é viável e desenho a arquitetura antes de a tarefa chegar ao time.</p>
+    <p class="line">Como Tech Lead, vejo com produto e design o que é viável e desenho a arquitetura antes de a tarefa chegar ao time.</p>
     <div class="hero__cta">${agendar('geral')}<a class="cta cta--ghost" href="servicos/">Serviços para empresas</a></div>
     <p class="cta__note">Agendar abre uma conversa comigo no WhatsApp.</p>
     <p class="meta">Caxias do Sul, remoto · Vue, Nuxt, Node, Python, AWS</p>
@@ -120,7 +120,7 @@ ${topbar('cv', './')}
   </div>
 </section>
 <section class="how" id="como-trabalho" aria-labelledby="how-h">
-  <div class="how__head"><h2 class="sec__h" id="how-h">Como eu trabalho</h2><p class="sec__p">É o que faço hoje como Tech Lead no PilarHomes, em quatro passos.</p></div>
+  <div class="how__head"><h2 class="sec__h" id="how-h">Como eu trabalho</h2><p class="sec__p">Quatro passos que repito em todo time que lidero.</p></div>
   <ol class="how__list">${HOW.map(([t, p, a], i) => `<li class="how__i"><span class="how__n" aria-hidden="true">${i + 1}</span><h3 class="how__t">${t}</h3><p class="how__p">${p}</p><p class="how__a"><code>${a}</code></p></li>`).join('')}</ol>
 </section>
 <div class="tagbar" role="group" aria-label="Filtrar commits por tag"><code translate="no">--tag</code>${FILTERS.map((f, i) => `<button type="button" data-f="${f}" aria-pressed="${!i}">${f}</button>`).join('')}</div>
@@ -275,7 +275,7 @@ ${topbar('cv', './')}
     const [g, sub, ...rest] = cmd.split(' '); const arg = rest.join(' ');
     if (cmd === 'help') return say(cmd, ['<b>git log</b> mostra tudo · <b>git log --tag=time</b> filtra', '<b>git show shorts-hls</b> abre a prévia · <b>git checkout pelos-caminhos</b> abre a história', '<b>git branch</b> lista as branches · <b>whoami</b> · <b>clear</b>']);
     if (cmd === 'clear') { out.innerHTML = ''; return; }
-    if (cmd === 'whoami') return say(cmd, ['Lucas Gehlen, Tech Lead do PilarHomes. Caxias do Sul.']);
+    if (cmd === 'whoami') return say(cmd, ['Lucas Gehlen, Tech Lead e consultor de IA. Caxias do Sul.']);
     if (g !== 'git') return say(cmd, [`comando não encontrado: ${g.replace(/</g, '&lt;')}. Tente <b>help</b>.`]);
     if (sub === 'log') {
       const m = cmd.match(/--tag[= ]([\wçãéáíóõ-]+)/i);

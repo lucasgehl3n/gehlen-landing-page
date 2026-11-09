@@ -7,10 +7,10 @@ document.head.insertAdjacentHTML('beforeend', `<link rel="icon" href="data:image
 
 // Passos na ordem em que acontecem. Cada um sai do que eu já faço como Tech Lead.
 const PASSOS = [
-  ['Escuta', 'Começo com conversas individuais com quem está no dia a dia. Na Pilar faço 1:1 com cada pessoa do time, e é ali que aparece o que não chega à reunião.'],
+  ['Escuta', 'Começo com conversas individuais com quem está no dia a dia. Hoje faço 1:1 com cada pessoa do time, e é ali que aparece o que não chega à reunião.'],
   ['Diagnóstico', 'Mapeio o fluxo do ticket ao deploy: onde o trabalho espera, o que está escrito e o que só existe na cabeça de alguém. Só depois falo de ferramenta.'],
   ['Alinhamento', 'Escrevo a proposta com contexto, alternativas, custo e como validar. O time revisa e decide comigo. Se o grupo escolher outro caminho, sigo a decisão.'],
-  ['Implantação gradual', 'Começo por um fluxo pequeno, com quem quer testar. Quando dá, a mudança entra atrás de feature flag, como fazemos no PilarHomes, e só cresce o que funcionou.'],
+  ['Implantação gradual', 'Começo por um fluxo pequeno, com quem quer testar. Quando dá, a mudança entra atrás de feature flag, como faço no meu time hoje, e só cresce o que funcionou.'],
   ['Documentação', 'O que deu certo vira guia e runbook no repositório. Escrevo para que a pessoa e o assistente de código leiam o mesmo texto.'],
   ['Autonomia do time', 'Meu trabalho termina quando o time segue sem mim: sabe onde está cada guia, como atualizar e quando largar uma ferramenta que não ajudou.'],
 ];
@@ -36,7 +36,7 @@ ${topbar('servicos', '../')}
   <section class="sv-hero">
     <p class="hero__head"><code translate="no">git checkout servicos</code></p>
     <h1 class="sv-h1">Ajudo times de produto e engenharia a colocar IA no trabalho, uma etapa de cada vez.</h1>
-    <p class="sv-lead">Faço isso hoje como Tech Lead do PilarHomes. Organizo tech talks sobre IA no desenvolvimento e escrevi um guia de contribuição que serve tanto para quem entra no time quanto para o assistente de código. Agora ofereço esse trabalho para outras empresas.</p>
+    <p class="sv-lead">Faço isso hoje como Tech Lead. Organizo tech talks sobre IA no desenvolvimento e escrevi um guia de contribuição que serve tanto para quem entra no time quanto para o assistente de código. Agora ofereço esse trabalho para outras empresas.</p>
     <div class="hero__cta">${agendar('ia')}<a class="cta cta--ghost" href="mailto:${EMAIL}?subject=${encodeURIComponent('IA no meu time')}">Escrever por e-mail</a></div>
     <p class="cta__note">Agendar abre uma conversa comigo no WhatsApp.</p>
   </section>
