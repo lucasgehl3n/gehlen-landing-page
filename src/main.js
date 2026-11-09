@@ -2,52 +2,52 @@ import './style.css';
 import { C, mark, icon } from './brand.js';
 import * as A from './art.js';
 import { initHome } from './home.js';
+import { EMAIL } from './config.js';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = (s, el = document) => el.querySelector(s);
 const VEJA = 'https://veja.abril.com.br/economia/uma-em-cada-cinco-vendas-da-pilar-ja-vem-de-marketplace-imobiliario/';
 const FOLHA = 'https://www1.folha.uol.com.br/colunas/painelsa/2026/05/proptech-lanca-projeto-de-tiktok-imobiliario-com-corretores-como-produtores-de-conteudo.shtml';
-const EMAIL = '[preencher e-mail]';
 const src = (u, n) => `<a href="${u}" target="_blank" rel="noopener">${n}</a>`;
 
 /* ---------- Conjuntos de stories ---------- */
 const NOTE = { k: 'Notas técnicas', t: 'Os detalhes ficam no blog', p: 'O texto técnico serve para qualquer time e não cita empresa nem produto.' };
 const SETS = [
   { id: 'shorts', titulo: 'Shorts no PilarHomes', tipo: 'Projeto', icon: 'play2', tags: ['Produto', 'Arquitetura'], stories: [
-    { k: 'Desafio', t: 'Vídeo curto num portal de imóveis', p: 'Levei o Shorts da ideia à entrega. Comecei com estudo de mercado e benchmarks. O vídeo precisava começar rápido em qualquer rede, inclusive na fraca. Troque a rede e veja os segmentos chegando.', art: A.hlsTimeline },
-    { k: 'O que eu fiz', t: 'A infraestrutura de vídeo em HLS', p: 'Desenhei a entrega dos vídeos em HLS e escrevi a proposta de reprocessar o catálogo, que foi aprovada. O vídeo começa na qualidade mais leve e sobe quando a conexão deixa. Arraste para trocar o degrau.', art: A.quality },
-    { k: 'O que mudou', t: 'Mais tempo no portal', p: `Segundo a VEJA, os vídeos curtos já entram na jornada de 40% dos potenciais clientes do portal. Nos testes que a Pilar divulgou, quem viu Shorts converteu mais. ${src(VEJA, 'VEJA, out/2026')}`, art: () => A.results(src(FOLHA, 'Folha, mai/2026')) },
+    { k: 'Contexto e gargalo', t: 'Vídeo curto num portal de imóveis', p: 'Propus o Shorts no PilarHomes e levei a feature do estudo de mercado e dos benchmarks à entrega. Com o uso crescendo, o gargalo virou o tempo até o vídeo começar, sobretudo em rede fraca. Troque a rede e veja os segmentos chegando.', art: A.hlsTimeline },
+    { k: 'Decisão', t: 'A infraestrutura de vídeo em HLS', p: 'Desenhei a entrega dos vídeos em HLS e escrevi a proposta de reprocessar o catálogo, que foi aprovada. O processamento novo não multiplica o custo a cada qualidade extra. O vídeo começa na qualidade mais leve e sobe quando a conexão deixa. Arraste para trocar o degrau.', art: A.quality },
+    { k: 'Impacto', t: 'Mais tempo no portal', p: `Segundo a VEJA, os vídeos curtos já entram na jornada de 40% dos potenciais clientes do portal. Nos testes que a Pilar divulgou, quem viu Shorts converteu mais. ${src(VEJA, 'VEJA, out/2026')}`, art: () => A.results(src(FOLHA, 'Folha, mai/2026')) },
     { ...NOTE, art: () => A.post('Reduzir o tempo até o primeiro quadro em vídeo curto (HLS) sem multiplicar o custo de encoding', 'hls') },
   ] },
   { id: 'cidade', titulo: 'Segunda cidade', tipo: 'Projeto', icon: 'city', tags: ['Produto'], stories: [
-    { k: 'Desafio', t: 'O mesmo portal em outra cidade', p: 'O PilarHomes nasceu atendendo uma cidade e precisava chegar a uma segunda.', art: A.cities },
-    { k: 'O que eu fiz', t: 'Liderei a expansão', p: 'Liderei a expansão pela engenharia. No meu papel, isso quer dizer avaliar a viabilidade e desenhar a arquitetura antes de o trabalho chegar ao time.', art: () => A.career('pilar') },
-    { k: 'Resultado', t: 'São Paulo e Curitiba', p: `Hoje o portal atende as duas cidades. Segundo a VEJA, tem mais de 30 mil imóveis e chegou a 1,7 milhão de usuários em 2026. ${src(VEJA, 'VEJA, out/2026')}`, art: A.cities },
+    { k: 'Contexto', t: 'O mesmo portal em outra cidade', p: 'O PilarHomes nasceu atendendo uma cidade e precisava chegar a uma segunda.', art: A.cities },
+    { k: 'Gargalo e decisão', t: 'Viabilidade antes do código', p: 'A expansão precisava de viabilidade avaliada e arquitetura desenhada antes de chegar ao time. Liderei essa parte pela engenharia.', art: () => A.career('pilar') },
+    { k: 'Impacto', t: 'São Paulo e Curitiba', p: `Hoje o portal atende as duas cidades. Segundo a VEJA, tem mais de 30 mil imóveis e chegou a 1,7 milhão de usuários em 2026. ${src(VEJA, 'VEJA, out/2026')}`, art: A.cities },
   ] },
   { id: 'mapa', titulo: 'Mapa da busca avançada', tipo: 'Projeto', icon: 'hex', tags: ['Arquitetura', 'Produto'], stories: [
-    { k: 'Desafio', t: 'Milhares de imóveis num mapa', p: 'Fiquei na linha de frente da busca avançada, a feature mais complexa do ano no portal. Uma parte era mostrar muitos imóveis no mapa sem virar um amontoado de pinos.', art: A.pins },
-    { k: 'O que eu fiz', t: 'Agrupar por hexágonos', p: 'Agrupei os imóveis em células H3, o índice hexagonal aberto da Uber, calculado no backend. Arraste o zoom.', art: A.hexmap },
-    { k: 'O que muda', t: 'O mapa mostra onde há imóvel', p: 'Em vez de pinos sobrepostos, o mapa mostra quantos imóveis há em cada região, em qualquer zoom.', art: () => A.post('Agrupar milhares de pontos num mapa com células H3', 'h3') },
+    { k: 'Contexto e gargalo', t: 'Milhares de imóveis num mapa', p: 'Fiquei na linha de frente da busca avançada, a feature mais complexa do ano no portal. Com muitos imóveis, o mapa virava um amontoado de pinos.', art: A.pins },
+    { k: 'Decisão', t: 'Agrupar por hexágonos', p: 'Comparei formas de agregação espacial e agrupei os imóveis em células H3, o índice hexagonal aberto da Uber, calculado no backend. Arraste o zoom.', art: A.hexmap },
+    { k: 'Impacto', t: 'O mapa mostra onde há imóvel', p: 'Em vez de pinos sobrepostos, o mapa mostra quantos imóveis há em cada região, em qualquer zoom.', art: () => A.post('Agrupar milhares de pontos num mapa com células H3', 'h3') },
   ] },
   { id: 'alertas', titulo: 'Radar de imóveis novos', tipo: 'Projeto', icon: 'bell', tags: ['Arquitetura'], stories: [
-    { k: 'Desafio', t: 'Refazer a busca para ver novidade', p: 'Quem procurava imóvel no portal precisava voltar e repetir a busca. Na rede, os corretores pediam alertas parecidos.', art: A.searchLoop },
-    { k: 'O que eu fiz', t: 'Uma base de alertas para dois produtos', p: 'Propus um domínio único de buscas salvas e avisos, usado pelo portal e pela rede. Fui o único autor da RFC, e ela foi aprovada.', art: A.sharedBase },
-    { k: 'O que muda', t: 'Salvar uma vez e acompanhar', p: 'A pessoa salva a busca e recebe aviso quando entra um imóvel compatível. Os dois produtos usam a mesma base. Monte uma busca e salve.', art: A.builder },
+    { k: 'Contexto', t: 'Refazer a busca para ver novidade', p: 'Quem procurava imóvel no portal precisava voltar e repetir a busca. Na rede, os corretores pediam alertas parecidos.', art: A.searchLoop },
+    { k: 'Gargalo e decisão', t: 'Uma base de alertas para dois produtos', p: 'Cada produto ia acabar com o seu próprio sistema de alertas. Propus um domínio único de buscas salvas e avisos, usado pelo portal e pela rede. Fui o único autor da RFC, e ela foi aprovada.', art: A.sharedBase },
+    { k: 'Impacto', t: 'Salvar uma vez e acompanhar', p: 'A pessoa salva a busca e recebe aviso quando entra um imóvel compatível. Os dois produtos usam a mesma base. Monte uma busca e salve.', art: A.builder },
     { ...NOTE, art: () => A.post('Um serviço de buscas salvas e alertas compartilhado entre dois produtos', 'alert') },
   ] },
   { id: 'time', titulo: 'Time e engenharia', tipo: 'Liderança', icon: 'team', tags: ['Time'], stories: [
-    { k: 'Desafio', t: 'Conhecimento na cabeça de poucos', p: 'O processo vivia na cabeça de quem já estava no time. Onboarding e revisão de código dependiam de improviso.', art: A.scattered },
-    { k: 'O que eu faço', t: '1:1, tech talks e decisões por escrito', p: 'Faço 1:1 com cada pessoa e organizo tech talks sobre qualidade, arquitetura e IA no desenvolvimento. Decisão de porte vira documento revisado pelo time. Já escrevi propostas que o time decidiu não seguir, e fiquei com a decisão do grupo.', art: A.rituals },
-    { k: 'O que eu fiz', t: 'Guia de MR e runbooks', p: 'Formalizei o fluxo de desenvolvimento num guia com checklist de merge request e mantenho os runbooks de infra e de produto. Marque os itens.', art: A.checklist },
-    { k: 'O que eu fiz', t: 'Feature flags saíram do papel', p: 'O assunto nunca saía da lista. Pesquisei, testei e implementei. Hoje as entregas do time saem em fases, atrás de flags. Escolha a fase.', art: A.flags },
-    { k: 'O que muda', t: 'Onboarding mais curto', p: 'Quem chega encontra o caminho escrito. O guia do clone ao merge também funciona como skill para assistente de código, então pessoa e LLM seguem o mesmo padrão.', art: A.humanLlm },
+    { k: 'Contexto e gargalo', t: 'Conhecimento na cabeça de poucos', p: 'Passei a liderar o time em setembro de 2025. O processo vivia na cabeça de quem já estava no time. Onboarding e revisão de código dependiam de improviso.', art: A.scattered },
+    { k: 'Decisão', t: '1:1, tech talks e decisões por escrito', p: 'Faço 1:1 com cada pessoa e organizo tech talks sobre qualidade, arquitetura e IA no desenvolvimento. Decisão de porte vira documento revisado pelo time. Já escrevi propostas que o time decidiu não seguir, e fiquei com a decisão do grupo.', art: A.rituals },
+    { k: 'Decisão', t: 'Guia de MR e runbooks', p: 'Formalizei o fluxo de desenvolvimento num guia com checklist de merge request e mantenho os runbooks de infra e de produto. Marque os itens.', art: A.checklist },
+    { k: 'Decisão', t: 'Feature flags saíram do papel', p: 'O assunto nunca saía da lista. Pesquisei, testei e implementei. Hoje as entregas do time saem em fases, atrás de flags. Escolha a fase.', art: A.flags },
+    { k: 'Impacto', t: 'Onboarding mais curto', p: 'Quem chega encontra o caminho escrito. O guia do clone ao merge também funciona como skill para assistente de código, então pessoa e LLM seguem o mesmo padrão.', art: A.humanLlm },
     { ...NOTE, art: () => A.post('Do clone ao merge: um guia de contribuição que serve para humano e para LLM', 'doc') },
   ] },
   { id: 'pelos', titulo: 'Pelos Caminhos', tipo: 'TCC', icon: 'paw', tags: ['Produto', 'Formação'], stories: [
-    { k: 'Desafio', t: 'Adoção com três lados', p: 'Meu TCC em Ciência da Computação na UCS foi uma plataforma de adoção de animais para quem quer adotar, para as ONGs e para os voluntários.', art: A.roles },
-    { k: 'O que eu fiz', t: 'App, API e permissões por perfil', p: 'Fiz o app em Vue 3 e Nuxt, com Capacitor para rodar no celular, e a API em Node com PostgreSQL. Cada perfil tem permissões próprias e cada animal ganha um QR code. Toque nos blocos.', art: A.arch },
-    { k: 'O que eu fiz', t: 'A raça pela foto', p: 'Um serviço em Flask, rodando num container Docker, reconhece a raça do animal a partir da foto.', art: A.scan },
-    { k: 'Resultado', t: 'O trabalho de conclusão do curso', p: 'Foi o projeto que fechou meu bacharelado em Ciência da Computação na UCS, em 2023.', art: A.qr },
+    { k: 'Contexto', t: 'Adoção com três lados', p: 'Meu TCC em Ciência da Computação na UCS foi uma plataforma de adoção de animais para quem quer adotar, para as ONGs e para os voluntários.', art: A.roles },
+    { k: 'Decisão', t: 'App, API e permissões por perfil', p: 'Fiz o app em Vue 3 e Nuxt, com Capacitor para rodar no celular, e a API em Node com PostgreSQL. Cada perfil tem permissões próprias e cada animal ganha um QR code. Toque nos blocos.', art: A.arch },
+    { k: 'Decisão', t: 'A raça pela foto', p: 'Um serviço em Flask, rodando num container Docker, reconhece a raça do animal a partir da foto.', art: A.scan },
+    { k: 'Impacto', t: 'O trabalho de conclusão do curso', p: 'Foi o projeto que fechou meu bacharelado em Ciência da Computação na UCS, em 2023.', art: A.qr },
   ] },
   { id: 'trajetoria', titulo: 'Trajetória', tipo: 'Trajetória', icon: 'case', tags: ['Formação', 'Carreira'], stories: [
     { id: 'ifrs', icon: 'cap', k: '2015 a 2018', t: 'Técnico em Informática no IFRS', p: 'Fiz o curso técnico em Informática no IFRS, campus Farroupilha.', art: () => A.career('ifrs') },

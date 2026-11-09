@@ -32,13 +32,22 @@ O teste gera o build e roda o Playwright em 390x844, 768x1024, 1440x900 e 1920x1
 - `src/brand.js`: marca, cores e ícones. `brand.html` mostra a identidade.
 - `BRAND.md`: decisões de identidade e as referências que usei.
 
+## Contato e conteúdo
+
+`src/config.js` concentra e-mail, LinkedIn, o link do botão "Agendar conversa" (hoje WhatsApp) e os depoimentos. A seção de depoimentos só aparece com `MOSTRAR_DEPOIMENTOS = true` e a lista preenchida, com nome, cargo e LinkedIn de quem autorizou.
+
+## Páginas
+
+- `/`: currículo (grafo, Como eu trabalho, cases com contexto, gargalo e impacto).
+- `/servicos/`: consultoria de implantação de IA em times.
+
 ## Pendências
 
-- `[preencher e-mail]` no rodapé.
+- Depoimentos autorizados.
 - Foto (ainda não entrou no site).
 
 ## Fontes
 
-Cabinet Grotesk vem da Fontshare (Indian Type Foundry, licença ITF Free Font). Geist Mono vem do pacote @fontsource.
+Cabinet Grotesk vem da Fontshare (Indian Type Foundry, licença ITF Free Font). Geist e Geist Mono vêm do pacote oficial da Vercel (`geist` 1.9.2 no npm), sob a SIL Open Font License 1.1; a licença está em `public/fonts/Geist-OFL.txt`.
 
 O contorno do mapa vem do Natural Earth 1:50m (domínio público), pelo repositório nvkelso/natural-earth-vector.

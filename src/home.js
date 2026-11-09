@@ -2,6 +2,8 @@
 import { mark, icon } from './brand.js';
 import * as Z from './teasers.js';
 import * as V from './visuals.js';
+import { topbar, agendar, depoimentos } from './shell.js';
+import { AGENDAR, LINKEDIN, MOSTRAR_DEPOIMENTOS, DEPOIMENTOS } from './config.js';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = (s, el = document) => el.querySelector(s);
@@ -21,6 +23,16 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     cidade: 'Liderei a expansão do portal para a segunda cidade. Hoje ele atende São Paulo e Curitiba.',
     pelos: 'TCC: plataforma de adoção com app, API, permissões por perfil e raça pela foto.',
   };
+  // cada case no cartão: contexto, gargalo e impacto
+  const CGI = {
+    time: ['Passei a liderar o time do PilarHomes em setembro de 2025.', 'O processo vivia na cabeça de quem já estava no time. Onboarding e revisão de código dependiam de improviso.', 'Escrevi o guia do clone ao merge, mantenho os runbooks e coloquei feature flags em uso. Quem chega encontra o caminho escrito, e as entregas saem em fases.'],
+    alertas: ['Quem procurava imóvel no portal tinha de repetir a busca para ver novidade. Na rede, os corretores pediam alertas parecidos.', 'Cada produto ia acabar com o seu próprio sistema de alertas.', 'Escrevi sozinho a RFC de uma base única de buscas salvas e avisos, e ela foi aprovada. Portal e rede usam a mesma base.'],
+    shorts: ['Propus o Shorts no PilarHomes e levei a feature do estudo de mercado à entrega.', 'Com o uso crescendo, o vídeo demorava a começar, sobretudo em rede fraca.', 'Desenhei a entrega em HLS e escrevi a proposta de reprocessar o catálogo, que foi aprovada. Segundo a VEJA, os vídeos curtos já entram na jornada de 40% dos potenciais clientes do portal.'],
+    mapa: ['Fiquei na linha de frente da busca avançada, a feature mais complexa do ano no portal.', 'Com milhares de imóveis, o mapa virava um amontoado de pinos.', 'Comparei formas de agregação espacial e agrupei os imóveis em células H3 no backend. O mapa mostra quantos imóveis há em cada região, em qualquer zoom.'],
+    cidade: ['O PilarHomes nasceu atendendo uma cidade e precisava chegar a uma segunda.', 'A expansão precisava de viabilidade avaliada e arquitetura desenhada antes de chegar ao time.', 'Liderei essa parte pela engenharia. Hoje o portal atende São Paulo e Curitiba.'],
+    pelos: ['Meu TCC em Ciência da Computação na UCS: uma plataforma de adoção de animais.', 'Três públicos com permissões diferentes: quem adota, as ONGs e os voluntários.', 'Entreguei app, API e reconhecimento de raça pela foto. O projeto fechou meu bacharelado em 2023.'],
+  };
+  const cgi = (id) => `<span class="cgi">${['contexto', 'gargalo', 'impacto'].map((k, i) => `<span class="cgi__r cgi__r--${k}"><span class="cgi__k">${k}</span><span class="cgi__v">${CGI[id][i]}</span></span>`).join('')}</span>`;
   const ST = (set, i) => { const s = setOf(set).stories[i]; return `${s.k.toLowerCase()}: ${s.t.charAt(0).toLowerCase()}${s.t.slice(1)}`; };
   const commits = (id, idx, lane = 1) => idx.map((i) => ({ kind: 'c', lane, set: id, s: i, br: id, msg: ST(id, i), tags: TAGS[id] }));
   const merge = (id, extra = {}) => ({ kind: 'm', lane: 0, set: id, s: 0, br: id, merge: id, title: setOf(id).titulo, tags: TAGS[id], ...extra });
@@ -64,10 +76,10 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     if (r.kind === 'c') return `<li class="r r--c in-${r.lane}"><button type="button" ${a}><code translate="no">${r.h}</code><span>${r.msg}</span></button></li>`;
     if (r.kind === 'm' && !r.edu) return `<li class="r r--m r--${r.set}"><button type="button" ${a}>
       <span class="m__git"><code translate="no">${r.h}</code> Merge branch '${BR[r.merge]}' ${refs(r)}</span>
-      <span class="m__body"><span class="m__vis">${TEASE[r.set]()}</span><span class="m__txt"><span class="m__t">${r.title}</span><span class="m__d">${SUM[r.set]}</span><span class="m__tags">${tagchips(r)}<span class="m__go">Ver a história ${icon('right', { size: 16 })}</span></span></span></span></button></li>`;
+      <span class="m__body"><span class="m__vis">${TEASE[r.set]()}</span><span class="m__txt"><span class="m__t">${r.title}</span>${cgi(r.set)}<span class="m__tags">${tagchips(r)}<span class="m__go">Ver a história ${icon('right', { size: 16 })}</span></span></span></span></button></li>`;
     if (r.kind === 'm' && r.set === 'pelos') return `<li class="r r--m r--edu r--pelos"><button type="button" ${a}>
       <span class="m__git"><code translate="no">${r.h}</code> Merge branch 'pelos-caminhos' into formacao</span>
-      <span class="m__body"><span class="m__vis">${Z.scan()}</span><span class="m__txt"><span class="m__t">Pelos Caminhos</span><span class="m__d">${SUM.pelos}</span><span class="m__tags">${tagchips(r)}<span class="m__go">Ver a história ${icon('right', { size: 16 })}</span></span></span></span></button></li>`;
+      <span class="m__body"><span class="m__vis">${Z.scan()}</span><span class="m__txt"><span class="m__t">Pelos Caminhos</span>${cgi('pelos')}<span class="m__tags">${tagchips(r)}<span class="m__go">Ver a história ${icon('right', { size: 16 })}</span></span></span></span></button></li>`;
     if (r.kind === 'm') return `<li class="r r--grad"><button type="button" ${a}><span class="m__git"><code translate="no">${r.h}</code> Merge branch 'formacao' · ${r.date}</span><span class="g__t">${icon('cap', { size: 22 })}${r.title}</span><span class="g__d">UCS, Caxias do Sul. A formação entra na main.</span><span class="g__vis">${V.parallel()}</span></button></li>`;
     if (r.kind === 'tag') return `<li class="r r--tag"><button type="button" ${a}><span class="t__ref">${refs(r)}<time>${r.date}</time></span><span class="t__t">${r.title}</span><span class="t__d">Lidero o time de engenharia do PilarHomes, nas duas cidades.</span></button></li>`;
     if (r.kind === 'era') return `<li class="r r--era${r.vis ? ' r--era-v' : ''}"><button type="button" ${a}><span class="e__p"><code translate="no">${r.h}</code>${r.period}${refs(r)}</span><span class="e__co">${r.co}</span><span class="e__role">${r.role}</span><span class="e__txt">${r.txt}</span><span class="e__tr">${Z.track(r.span[0], r.span[1], 'tz-ink-f')}</span><span class="e__st">${r.stack.map((s) => `<span>${s}</span>`).join('')}</span>${r.vis ? `<span class="e__vis">${V[r.vis]()}</span>` : ''}</button></li>`;
@@ -81,16 +93,24 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     shortlog: () => `<li class="blk blk--sl"><p class="blk__cmd"><span class="p">$</span> git shortlog -s --since=2019 <span class="blk__h">meses por cargo</span></p>${V.shortlog()}</li>`,
   };
   const SUG = ['git log --tag=arquitetura', 'git show shorts-hls', 'git checkout pelos-caminhos', 'git branch', 'help'];
+  const HOW = [
+    ['Entendo antes de desenhar', 'Vejo com produto e design o que é viável. As telas passam pela engenharia antes de ficarem prontas, e a tarefa chega ao time com a arquitetura desenhada.', 'refinamento técnico de cada tela'],
+    ['Decido por escrito', 'Decisão de porte vira documento que o time revisa: contexto, alternativas, custo e como validar em etapas. Já escrevi proposta que o time decidiu não seguir, e fiquei com a decisão do grupo.', 'doc de decisão revisado pelo time'],
+    ['Entrego em fases', 'Feature flags nunca saíam do papel. Pesquisei, testei e implementei. Hoje as entregas saem em fases, e o time experimenta com segurança.', 'flag: time interno, parte do público, todos'],
+    ['Deixo o caminho escrito', 'Mantenho os runbooks de infra e de produto e o guia de merge request. Quem chega encontra o processo escrito, e o mesmo guia serve de skill para o assistente de código.', 'runbooks e guia do clone ao merge'],
+  ];
   const app = $('#app');
   app.innerHTML = `
-<header class="top"><a class="brand" href="#" aria-label="Lucas Gehlen, início">${mark({ size: 32 })}<span translate="no">Lucas Gehlen</span></a><nav class="top__r" aria-label="Seções"><a href="#historico">Histórico</a><a href="#contato">Contato</a></nav></header>
+${topbar('cv', './')}
 <section class="hero">
   <div class="hero__id">
     <p class="hero__head"><span class="pulse"></span><code translate="no">HEAD -> main</code> · hoje</p>
     <h1 translate="no">Lucas Gehlen</h1>
-    <p class="role">Tech Lead do PilarHomes</p>
-    <p class="line">Trabalho entre produto e engenharia: vejo o que é viável e desenho a arquitetura antes de a tarefa chegar ao time. O time é a minha principal entrega.</p>
-    <p class="meta">Caxias do Sul · Vue, Nuxt, Node, Python, AWS</p>
+    <p class="job">Lidero times de engenharia de produto e ajudo empresas a colocar IA no trabalho do time, uma etapa de cada vez.</p>
+    <p class="line">Hoje sou Tech Lead do PilarHomes. Vejo com produto e design o que é viável e desenho a arquitetura antes de a tarefa chegar ao time.</p>
+    <div class="hero__cta">${agendar('geral')}<a class="cta cta--ghost" href="servicos/">Serviços para empresas</a></div>
+    <p class="cta__note">Agendar abre uma conversa comigo no WhatsApp.</p>
+    <p class="meta">Caxias do Sul, remoto · Vue, Nuxt, Node, Python, AWS</p>
   </div>
   <div class="term" role="region" aria-label="Terminal para navegar no histórico">
     <div class="term__bar"><code translate="no">~/lucas-gehlen</code><code class="term__br">(main)</code></div>
@@ -98,6 +118,10 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     <form class="term__in" autocomplete="off"><label for="cmd" class="p">$</label><input id="cmd" name="cmd" spellcheck="false" autocapitalize="off" placeholder="git show shorts-hls" aria-label="Comando git"></form>
     <div class="term__sug">${SUG.map((s) => `<button type="button" data-cmd="${s}">${s}</button>`).join('')}</div>
   </div>
+</section>
+<section class="how" id="como-trabalho" aria-labelledby="how-h">
+  <div class="how__head"><h2 class="sec__h" id="how-h">Como eu trabalho</h2><p class="sec__p">É o que faço hoje como Tech Lead no PilarHomes, em quatro passos.</p></div>
+  <ol class="how__list">${HOW.map(([t, p, a], i) => `<li class="how__i"><span class="how__n" aria-hidden="true">${i + 1}</span><h3 class="how__t">${t}</h3><p class="how__p">${p}</p><p class="how__a"><code>${a}</code></p></li>`).join('')}</ol>
 </section>
 <div class="tagbar" role="group" aria-label="Filtrar commits por tag"><code translate="no">--tag</code>${FILTERS.map((f, i) => `<button type="button" data-f="${f}" aria-pressed="${!i}">${f}</button>`).join('')}</div>
 <main class="stage">
@@ -110,11 +134,12 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
   </section>
   <aside class="peek" aria-live="polite"><div class="peek__in"></div></aside>
 </main>
+<div class="dp-slot">${MOSTRAR_DEPOIMENTOS ? depoimentos(DEPOIMENTOS) : ''}</div>
 <footer class="foot" id="contato">
   <p class="foot__h">Fale comigo</p>
   <div class="foot__term"><p><span class="p">$</span> git commit --allow-empty -m "<span class="foot__msg">oi, Lucas</span>"</p><p><span class="p">$</span> git push <span class="foot__mail">${EMAIL}</span></p></div>
   <form class="foot__form"><label for="msg">Mensagem do commit</label><input id="msg" name="msg" maxlength="72" value="oi, Lucas" autocomplete="off"><a class="foot__send" href="mailto:${EMAIL}?subject=oi%2C%20Lucas">Enviar por e-mail</a></form>
-  <p class="foot__links"><a href="mailto:${EMAIL}">${EMAIL}</a><a href="https://www.linkedin.com/in/lgehlen" target="_blank" rel="noopener">LinkedIn</a><span>Caxias do Sul, RS</span></p>
+  <p class="foot__links"><a href="mailto:${EMAIL}">${EMAIL}</a><a href="${AGENDAR.geral}" target="_blank" rel="noopener">WhatsApp</a><a href="${LINKEDIN}" target="_blank" rel="noopener">LinkedIn</a><span>Caxias do Sul, RS</span></p>
 </footer>
 <div class="scrub" aria-label="Linha do tempo" role="group"><span class="scrub__y">hoje</span><div class="scrub__t" role="slider" tabindex="0" aria-label="Ir para um ano" aria-valuemin="2015" aria-valuemax="2026" aria-valuenow="2026"><i class="scrub__th"></i></div></div>
 <div class="sheet" hidden><div class="sheet__in" role="dialog" aria-modal="false" aria-label="Prévia do commit"><span class="sheet__grab" aria-hidden="true"></span><button type="button" class="sheet__x" data-sheet-close aria-label="Fechar prévia">${icon('close', { size: 20 })}</button><div class="sheet__c"></div></div></div>
@@ -279,6 +304,7 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden && $('#st').hidden) closeSheet(); });
   let lastW = innerWidth; addEventListener('resize', () => { if (innerWidth !== lastW) { lastW = innerWidth; layout(); } });
   const align = () => { const ANC = { c: 'code', m: '.m__git', tag: '.t__ref', era: '.e__p', edu: '.m__git' }; let worst = 0, at = null; G.forEach((r) => { const n = nodes.querySelector(`[data-row="${r.i}"] .n-dot`).getBoundingClientRect(), a = list.querySelector(`[data-row="${r.i}"] ${ANC[r.kind]}`).getBoundingClientRect(); const d = Math.abs((n.top + n.height / 2) - (a.top + a.height / 2)); if (d > worst) { worst = d; at = r.i; } }); return { worst: Math.round(worst * 10) / 10, at }; };
+  window.__depoimentos = (lista) => { $('.dp-slot').innerHTML = depoimentos(lista); layout(); };
   window.__home = { run, layout, setTag, align, rowY: (i) => gTop + ys[i], rows: ROWS };
   return { start() { layout(); document.body.classList.add('ready'); if (wide()) showPeek(G[0]); } };
 }

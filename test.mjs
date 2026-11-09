@@ -128,13 +128,89 @@ for (const [vn, opt] of Object.entries(vps)) {
   await ctx.close();
   rep[vn] = { fps, errors: errs, checks: ok.map(([n, v]) => `${v ? 'OK ' : 'FALHOU '}${n}`) };
 }
+// seções novas: hero com agendar, como eu trabalho, cases, depoimentos e serviços
+const WA = 'https://wa.me/5554993503203?text=';
+const MSG = { geral: 'Oi Lucas, vim pelo seu site e quero conversar', ia: 'Oi Lucas, vim pelo seu site e quero conversar sobre IA na minha empresa' };
+const PROIBIDO = /vitrina|trilha|github|\[preencher/i;
+const FAKE = [
+  { nome: 'EXEMPLO Nome Sobrenome', cargo: 'EXEMPLO Cargo', empresa: 'EXEMPLO Empresa', linkedin: 'https://www.linkedin.com/in/exemplo', texto: 'EXEMPLO. Texto fictício só para mostrar o layout. Nenhum depoimento real foi autorizado ainda.' },
+  { nome: 'EXEMPLO Outra Pessoa', cargo: 'EXEMPLO Cargo', empresa: 'EXEMPLO Empresa', linkedin: 'https://www.linkedin.com/in/exemplo', texto: 'EXEMPLO. Segundo texto fictício, um pouco mais longo, para ver como dois cartões de alturas diferentes ficam lado a lado na grade.' },
+  { nome: 'EXEMPLO Terceira Pessoa', cargo: 'EXEMPLO Cargo', empresa: '', linkedin: 'https://www.linkedin.com/in/exemplo', texto: 'EXEMPLO. Terceiro texto fictício.' },
+];
+const CUT = () => { const out = [];
+  for (const e of document.querySelectorAll('body *')) { if (e.children.length || !e.textContent.trim() || e.classList.contains('sr') || e.closest('[hidden]')) continue; const cs = getComputedStyle(e); if (cs.display !== 'none' && (cs.overflow.includes('hidden') || cs.textOverflow === 'ellipsis') && e.clientWidth && e.scrollWidth > e.clientWidth + 1) out.push('cortado: ' + e.textContent.slice(0, 40)); }
+  // rótulos e textos que se cruzam dentro das seções novas
+  const els = [...document.querySelectorAll('.how h2,.how h3,.how p,.how code,.cgi__k,.cgi__v,.dp blockquote,.dp__n,.dp__r,.dp__in,.sv h1,.sv h2,.sv h3,.sv p,.sv li,.cta')].filter((e) => e.getClientRects().length);
+  const bx = els.map((e) => e.getBoundingClientRect());
+  for (let i = 0; i < els.length; i++) for (let j = i + 1; j < els.length; j++) { if (els[i].contains(els[j]) || els[j].contains(els[i])) continue; const a = bx[i], c = bx[j]; if (a.left < c.right - 1 && c.left < a.right - 1 && a.top < c.bottom - 1 && c.top < a.bottom - 1) out.push('sobreposto: ' + els[i].textContent.slice(0, 24) + ' x ' + els[j].textContent.slice(0, 24)); }
+  return out; };
+const NEWVPS = { mobile: 'mobile', desktop: 'desktop' };
+async function secShot(p, sel, path) {
+  await p.evaluate((s) => { const e = document.querySelector(s); scrollTo({ top: e.getBoundingClientRect().top + scrollY - 140, behavior: 'instant' }); }, sel); await p.waitForTimeout(900);
+  const st = await p.addStyleTag({ content: '.top,.tagbar,.scrub,.skip,.peek{visibility:hidden!important}' });
+  const r = await p.evaluate((s) => { const b = document.querySelector(s).getBoundingClientRect(); return { y: Math.max(0, b.top + scrollY - 24), h: b.height + 48, w: document.documentElement.clientWidth }; }, sel);
+  await p.screenshot({ path, fullPage: true, clip: { x: 0, y: r.y, width: r.w, height: r.h } });
+  await st.evaluate((e) => e.remove());
+}
+for (const [vn, opt] of Object.entries(vps)) {
+  const ctx = await b.newContext(opt); const p = await ctx.newPage(); const errs = []; const ok = [];
+  p.on('console', (m) => { if (['error', 'warning'].includes(m.type())) errs.push(m.text()); }); p.on('pageerror', (e) => errs.push(e.message));
+  const pr = NEWVPS[vn]; const S = (n) => `${D}/lucas-gehlen-cv-${pr}-${n}.png`;
+  await p.goto(url, { waitUntil: 'networkidle' }); await p.waitForTimeout(1000);
+  const cta = await p.evaluate(() => { const a = document.querySelector('.hero [data-agendar]'); return a && { href: a.href, t: a.target, rel: a.rel, txt: a.textContent.trim() }; });
+  ok.push(['hero: frase do trabalho e botão Agendar conversa no WhatsApp', !!(await p.$('.hero .job')) && cta && cta.txt === 'Agendar conversa' && cta.href === WA + encodeURIComponent(MSG.geral) && cta.t === '_blank' && cta.rel.includes('noopener')]);
+  ok.push(['rodapé com e-mail real no mailto', await p.evaluate(() => document.querySelector('.foot__send').href.startsWith('mailto:contato.lucasgehlen@gmail.com'))]);
+  ok.push(['nav com abas Currículo e Serviços', await p.evaluate(() => document.querySelector('.top__r [aria-current=page]').textContent === 'Currículo' && !!document.querySelector('.top__r a[href$="servicos/"]'))]);
+  ok.push(['Como eu trabalho com 4 passos', await p.evaluate(() => document.querySelectorAll('#como-trabalho .how__i').length === 4)]);
+  ok.push(['cases com contexto, gargalo e impacto', await p.evaluate(() => { const ms = [...document.querySelectorAll('.r--m')]; return ms.length === 6 && ms.every((m) => [...m.querySelectorAll('.cgi__k')].map((k) => k.textContent).join() === 'contexto,gargalo,impacto'); })]);
+  ok.push(['depoimentos escondidos (lista vazia e chave desligada)', await p.evaluate(() => !document.querySelector('.dp') && document.querySelector('.dp-slot').innerHTML.trim() === '')]);
+  ok.push(['nada de Vitrina, Trilha, GitHub ou placeholder', await p.evaluate((re) => !new RegExp(re, 'i').test(document.body.innerText), PROIBIDO.source)]);
+  const cuts = await p.evaluate(CUT); rep[vn + 'NovasCortes'] = cuts; ok.push([`seções novas sem corte nem sobreposição (${cuts.length})`, cuts.length === 0]);
+  const aa = []; for (const sel of ['.hero', '#como-trabalho', '.r--shorts', '.r--time', '.r--pelos']) { await p.evaluate((s) => { const e = document.querySelector(s); scrollTo({ top: e.getBoundingClientRect().top + scrollY - 100, behavior: 'instant' }); }, sel); await p.waitForTimeout(800); aa.push(...await p.evaluate(AA)); }
+  if (pr) {
+    await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(400);
+    await p.screenshot({ path: S('hero') });
+    await secShot(p, '.hero', S('hero-secao'));
+    await secShot(p, '#como-trabalho', S('como-trabalho'));
+    for (const [n, sel] of [['cases', '.r--shorts'], ['cases-time', '.r--time'], ['cases-alertas', '.r--alertas']]) await secShot(p, sel, S(n));
+  }
+  // exemplo de depoimentos, injetado só no teste (nunca vai para o build)
+  await p.evaluate((f) => window.__depoimentos(f), FAKE); await p.waitForTimeout(300);
+  await p.evaluate(() => document.querySelector('.dp').scrollIntoView({ behavior: 'instant' })); await p.waitForTimeout(400);
+  ok.push(['componente de depoimento: nome, cargo e LinkedIn', await p.evaluate(() => document.querySelectorAll('.dp__c').length === 3 && [...document.querySelectorAll('.dp__in')].every((a) => a.target === '_blank' && a.href.includes('linkedin.com')))]);
+  aa.push(...await p.evaluate(AA)); const dcut = await p.evaluate(CUT); ok.push([`depoimentos sem corte (${dcut.length})`, dcut.length === 0]);
+  if (pr) await secShot(p, '.dp', S('depoimentos-exemplo'));
+  // serviços
+  await p.goto(url + 'servicos/', { waitUntil: 'networkidle' }); await p.waitForTimeout(900);
+  ok.push(['Serviços: 6 etapas, agendar com mensagem de IA, sem preço', await p.evaluate(([wa, m]) => document.querySelectorAll('.br__i').length === 6 && [...document.querySelectorAll('[data-agendar]')].every((a) => a.href === wa + encodeURIComponent(m) && a.target === '_blank' && a.rel.includes('noopener')) && !/R\$|\bpreço\b/i.test(document.body.innerText), [WA, MSG.ia])]);
+  ok.push(['Serviços: aba ativa e volta para o currículo', await p.evaluate(() => document.querySelector('.top__r [aria-current=page]').textContent === 'Serviços' && !!document.querySelector('.top__r a[href="../"]'))]);
+  ok.push(['Serviços: sem rolagem horizontal', await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth)]);
+  ok.push(['Serviços: nada de Vitrina, Trilha, GitHub', await p.evaluate((re) => !new RegExp(re, 'i').test(document.body.innerText), PROIBIDO.source)]);
+  const scut = await p.evaluate(CUT); rep[vn + 'ServicosCortes'] = scut; ok.push([`Serviços sem corte nem sobreposição (${scut.length})`, scut.length === 0]);
+  const fontes = await p.evaluate(async () => { await document.fonts.ready; return ['800 16px "Cabinet Grotesk"', '16px "Geist"', '16px "Geist Mono Variable"'].every((f) => document.fonts.check(f)) && ![...document.querySelectorAll('body *')].some((e) => /serif/.test(getComputedStyle(e).fontFamily.replace(/sans-serif/g, ''))); });
+  ok.push(['fontes Cabinet + Geist carregadas, nenhuma serifa', fontes]);
+  if (pr) { await p.screenshot({ path: S('servicos-topo') }); await p.screenshot({ path: S('servicos'), fullPage: true }); await secShot(p, '#conduzo', S('servicos-conduzo')); }
+  for (const y of [0, 0.25, 0.5, 0.75, 1]) { await p.evaluate((y) => scrollTo({ top: (document.body.scrollHeight - innerHeight) * y, behavior: 'instant' }), y); await p.waitForTimeout(300); aa.push(...await p.evaluate(AA)); }
+  rep[vn + 'NovasAA'] = [...new Set(aa)]; ok.push([`contraste AA nas seções novas e em Serviços (${rep[vn + 'NovasAA'].length} falhas)`, rep[vn + 'NovasAA'].length === 0]);
+  await ctx.close();
+  rep[vn + 'Novas'] = { errors: errs, checks: ok.map(([n, v]) => `${v ? 'OK ' : 'FALHOU '}${n}`) };
+}
+// página inteira da home (movimento reduzido: tudo desenhado)
+for (const [pr, vw] of [['mobile', ALL.mobile], ['desktop', ALL.desktop]]) {
+  const c = await b.newContext({ ...vw, reducedMotion: 'reduce' }); const p = await c.newPage();
+  await p.goto(url, { waitUntil: 'networkidle' }); await p.waitForTimeout(900);
+  await p.screenshot({ path: `${D}/lucas-gehlen-cv-${pr}-home-completa.png`, fullPage: true }); await c.close();
+}
 // movimento reduzido
 const c3 = await b.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' }); const p3 = await c3.newPage(); const e3 = [];
 p3.on('pageerror', (e) => e3.push(e.message)); p3.on('console', (m) => m.type() === 'error' && e3.push(m.text()));
 await p3.goto(url, { waitUntil: 'networkidle' }); await p3.waitForTimeout(800);
 const full = await p3.evaluate(() => +document.querySelector('#pen rect').getAttribute('height') >= document.querySelector('.rows').offsetHeight);
 await p3.evaluate(() => window.__home.run('git checkout shorts-hls')); await p3.waitForTimeout(2500);
-rep.reducedMotion = { errors: e3, grafoCompletoSemAnimacao: full, autoAdvanceOff: (await p3.textContent('.st__k')).includes('1 de 4') };
+const autoOff = (await p3.textContent('.st__k')).includes('1 de 4');
+await p3.goto(url + 'servicos/', { waitUntil: 'networkidle' }); await p3.waitForTimeout(400);
+const pulseOff = await p3.evaluate(() => [...document.querySelectorAll('*')].every((e) => getComputedStyle(e).animationName === 'none' || parseFloat(getComputedStyle(e).animationDuration) === 0));
+rep.reducedMotion = { errors: e3, servicosSemAnimacao: pulseOff, grafoCompletoSemAnimacao: full, autoAdvanceOff: autoOff };
 await c3.close();
 // vídeos curtos: grafo escrito no scroll + interação
 for (const [vn, opt] of Object.entries(vps)) {

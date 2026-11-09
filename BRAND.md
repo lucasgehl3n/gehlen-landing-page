@@ -53,8 +53,9 @@ Tons da Serra Gaúcha: neblina, basalto, musgo. O acento é raro e quer dizer "o
 Um tema só, escuro, decidido pelo Lucas. O tema claro (neblina + petróleo) e o toggle saíram do código. O laranja (#FF5A1F) da primeira versão também foi descartado a pedido dele.
 
 ## Tipo
-- **Cabinet Grotesk** (Fontshare, licença ITF Free Font License, uso comercial liberado), arquivos em `public/fonts/`. Títulos 800 com tracking negativo; texto 500/400.
-- **Geist Mono** (@fontsource, OFL) para anos, rótulos, fontes e dados.
+- **Cabinet Grotesk** (Fontshare, licença ITF Free Font License, uso comercial liberado), arquivos em `public/fonts/`. Títulos, botões e navegação, 700/800 com tracking negativo.
+- **Geist** (pacote oficial da Vercel, OFL, em `public/fonts/`) no texto corrido.
+- **Geist Mono** (mesmo pacote, OFL) para anos, rótulos, fontes e dados.
 - Sem serifa em nenhum lugar.
 
 ## Ícones e grafismos
@@ -121,3 +122,11 @@ Cada visual mostra um fato do LinkedIn ou de fonte pública:
 - Compass/Vivo: portal B2B em micro frontends e um exemplo de mutante (`>` virando `>=`). É uma ilustração do conceito, sem telas nem nomes do projeto.
 - Conecta: ERP em .NET com os módulos fiscais que mantive (pedidos, entradas, NF-e, NFC-e).
 - Formação: faixa de anos em que estudei (IFRS, UCS) e trabalhei ao mesmo tempo.
+
+## Referências de alto padrão aplicadas (09/11/2026)
+
+- Charles Jaja e Pavel Medvedev: o hero ganhou uma frase que diz o trabalho e o botão "Agendar conversa" (WhatsApp, link em `src/config.js`).
+- Pavel e Jared Lukes: seção "Como eu trabalho" em 4 passos, com o artefato real de cada passo.
+- Charles Jaja: cada case abre em contexto, gargalo e impacto, no cartão do merge e nos stories (Contexto, Gargalo, Decisão, Impacto).
+- Charles e Pavel: componente de depoimento com nome, cargo e LinkedIn. Desligado até haver depoimento autorizado.
+- Página `/servicos/`: o processo de consultoria desenhado como uma branch (`git checkout -b ia-no-time` até o merge), no mesmo idioma visual do grafo.
