@@ -58,7 +58,7 @@ export function hexmap() {
     <label class="sr" for="hz">Zoom do mapa</label>
     <input id="hz" type="range" min="0" max="2" step="1" value="0" aria-valuetext="cidade">
     <div class="ql__ticks" aria-hidden="true"><span>cidade</span><span>bairro</span><span>rua</span></div>
-    <p class="art__src">Simulação com pontos fictícios. H3 é um índice geoespacial aberto.</p></div>`;
+    <p class="art__src">Pontos fictícios só para ilustrar. H3 é um índice geoespacial aberto.</p></div>`;
   return { html, init(root, api) {
     const cv = root.querySelector('.hx__cv'), r = root.querySelector('#hz'), dpr = Math.min(devicePixelRatio || 1, 2);
     const bb = cv.getBoundingClientRect(); const W = Math.max(10, bb.width), H = Math.max(10, bb.height); cv.width = W * dpr; cv.height = H * dpr;
@@ -232,7 +232,7 @@ export function builder() {
     ${grp('Cidade', ['São Paulo', 'Curitiba'])}${grp('Tipo', ['Apartamento', 'Casa'])}${grp('Quartos', ['2+', '3+', '4+'])}
     <button type="button" class="bld__save" data-save>Salvar busca</button>
     <div class="bld__msg" aria-live="polite"></div>
-    <p class="art__src">Simulação para mostrar o fluxo. Não usa dados reais.</p></div>`;
+    <p class="art__src">Ilustração do fluxo. Não usa dados reais.</p></div>`;
   return { html, init(root, api) {
     root.querySelectorAll('[data-k]').forEach((b) => b.addEventListener('click', () => { api.touch(); root.querySelectorAll(`[data-k="${b.dataset.k}"]`).forEach((x) => x.setAttribute('aria-pressed', x === b)); }));
     const save = root.querySelector('[data-save]'), msg = root.querySelector('.bld__msg');

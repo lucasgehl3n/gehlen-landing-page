@@ -1,8 +1,23 @@
 import { chromium } from 'playwright'; import { spawn } from 'node:child_process'; import fs from 'node:fs';
 const ROOT = new URL('.', import.meta.url).pathname.replace(/\/$/, ''); const D = process.env.OUT || ROOT + '/shots'; fs.mkdirSync(D, { recursive: true }); const port = 4340;
 const srv = spawn('python3', ['-m', 'http.server', String(port), '-d', `${ROOT}/dist`], { stdio: 'ignore' });
-await new Promise((r) => setTimeout(r, 700));
+for (let i = 0; i < 40; i++) {
+  try { await fetch(`http://127.0.0.1:${port}/`); break; } catch { await new Promise((r) => setTimeout(r, 150)); if (i === 39) throw new Error('http.server não subiu'); }
+}
 const url = `http://127.0.0.1:${port}/`; const b = await chromium.launch(); const rep = {};
+// Lucas: 'simulação' não pode aparecer em lugar nenhum do site (tag, legenda, alt, build).
+{
+  const hits = [];
+  for (const f of fs.readdirSync(`${ROOT}/dist`, { recursive: true })) {
+    const p = `${ROOT}/dist/${f}`;
+    if (!fs.statSync(p).isFile()) continue;
+    if (!/\.(html|js|css|svg|json|txt|xml)$/i.test(f)) continue;
+    const raw = fs.readFileSync(p, 'utf8');
+    if (/simula[cç][aã]o/i.test(raw)) hits.push(f);
+  }
+  if (hits.length) { console.error('FAIL: simulação no build →', hits); process.exit(1); }
+  console.log('ok: nenhuma ocorrência de simulação no dist/');
+}
 const ALL = { mobile: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }, tablet: { viewport: { width: 768, height: 1024 }, isMobile: true, hasTouch: true }, desktop: { viewport: { width: 1440, height: 900 } }, wide: { viewport: { width: 1920, height: 1080 } } };
 const vps = Object.fromEntries(Object.entries(ALL).filter(([k]) => !process.env.VPS || process.env.VPS.split(',').includes(k)));
 async function drag(p, x1, y1, x2, y2, steps = 12) { await p.mouse.move(x1, y1); await p.mouse.down(); for (let i = 1; i <= steps; i++) { await p.mouse.move(x1 + (x2 - x1) * i / steps, y1 + (y2 - y1) * i / steps); await p.waitForTimeout(16); } await p.mouse.up(); }
@@ -58,8 +73,9 @@ for (const [vn, opt] of Object.entries(vps)) {
   await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(500);
   ok.push(['grafo com branches e nós, sem ponto pulsando', await p.evaluate(() => document.querySelectorAll('.graph .node').length > 30 && document.querySelectorAll('.graph .edge').length >= 8 && !document.querySelector('.n-pulse, .pulse, .penhead, .run__live'))]);
   ok.push(['nenhuma animação em loop na home', await p.evaluate(() => ![...document.querySelectorAll('*')].some((e) => getComputedStyle(e).animationIterationCount.includes('infinite')))]);
-  ok.push(['sem fantasia de terminal: nada de HEAD, hash, $, git log, simulação ou status de fila', await p.evaluate(() => { const t = document.body.innerText; return !/HEAD ->|\$ git|git log|Merge branch|simulação|na fila|\b[0-9a-f]{7}\b/i.test(t) && !document.querySelector('.term, #cmd, [data-cmd], .foot__term, .ref'); })]);
-  ok.push(['hero mostra a task do Jira ao e2e como lista de 7 passos, 4 feitos por IA', await p.evaluate(() => document.querySelectorAll('.run__i').length === 7 && document.querySelectorAll('.run__i--ia').length === 4 && !document.querySelector('.run__s, .run__sum, .run__bar'))]);
+  ok.push(['sem terminal tipável, hash, simulação ou pontos pulsando', await p.evaluate(() => { const t = document.body.innerText; return !/HEAD ->|simulação|na fila/i.test(t) && !/\b[0-9a-f]{7}\b/.test(t) && !document.querySelector('.term, #cmd, [data-cmd], .foot__term, .pulse, .n-pulse, .penhead, .run__live'); })]);
+  ok.push(['histórico com Merge branch, tags e títulos em comando', await p.evaluate(() => /Merge branch/.test(document.body.innerText) && document.body.innerText.includes('tag: tech-lead') && document.body.innerText.includes('primeiro commit da main') && document.body.innerText.includes('$ git remote -v') && document.body.innerText.includes('$ git shortlog') && document.body.innerText.includes('$ git log --stat') && document.body.innerText.includes('$ cat stack.txt') && !!document.querySelector('.m__git, .ref, .blk__cmd'))]);
+  ok.push(['hero mostra a task do Jira ao e2e como lista de 7 passos, 4 feitos por IA', await p.evaluate(() => document.querySelectorAll('.run__i').length === 7 && document.querySelectorAll('.run__i--ia').length === 4 && !document.querySelector('.run__s, .run__sum, .run__bar') && document.querySelectorAll('.run__t')[2].textContent.includes('Algumas tasks vão direto para um agente de IA'))]);
   // grafo escrito no scroll
   const clip0 = await p.evaluate(() => +document.querySelector('#pen rect').getAttribute('height'));
   const mapa = await rowIdx(p, "r.merge==='mapa'"); await toRow(p, mapa); await p.waitForTimeout(900);

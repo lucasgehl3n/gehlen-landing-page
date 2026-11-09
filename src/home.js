@@ -10,6 +10,7 @@ const $ = (s, el = document) => el.querySelector(s);
 const norm = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
+  const BR = { time: 'time-e-engenharia', alertas: 'radar-imoveis', shorts: 'shorts-hls', mapa: 'mapa-h3', cidade: 'segunda-cidade', pelos: 'pelos-caminhos', formacao: 'formacao' };
   const TAGS = Object.fromEntries(SETS.map((s) => [s.id, s.tags]));
   const TEASE = { time: Z.checklist, alertas: Z.alert, shorts: Z.shorts, mapa: Z.hex, cidade: Z.cities, pelos: Z.scan };
   const SUM = {
@@ -37,7 +38,7 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     merge('time', { head: 1 }), ...commits('time', [4, 3, 1, 0]),
     merge('alertas'), ...commits('alertas', [2, 1, 0]),
     merge('shorts'), ...commits('shorts', [2]),
-    { kind: 'tag', lane: 0, set: 'trajetoria', s: 5, br: 'main', title: 'Passei a liderar o time do PilarHomes', date: 'set/2025', y: 2025.67, span: [2025.67, 2026.9], tags: ['Carreira'] },
+    { kind: 'tag', lane: 0, set: 'trajetoria', s: 5, br: 'main', title: 'Passei a liderar o time do PilarHomes', refs: ['tag: tech-lead'], date: 'set/2025', y: 2025.67, span: [2025.67, 2026.9], tags: ['Carreira'] },
     { kind: 'blk', id: 'remote' },
     { kind: 'year', label: '2024 a 2025', sub: 'engenheiro sênior' },
     ...commits('shorts', [1, 0]),
@@ -52,7 +53,7 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     { kind: 'era', lane: 0, set: 'trajetoria', s: 4, br: 'main', co: 'Compass.uol', role: 'Desenvolvedor front-end pleno', date: 'ago/2022', span: [2022.6, 2024.83], y: 2022.6, period: 'ago/2022 a nov/2024', txt: 'Alocado na Vivo, no portal B2B de empresas, feito em micro frontends. Implantei testes de mutação com Stryker e atuei em SRE.', stack: ['Vue', 'TypeScript', 'Node', 'Stryker', 'Kibana'], vis: 'mfe', tags: ['Carreira'] },
     ...commits('pelos', [1, 0], 2),
     { kind: 'era', lane: 0, set: 'trajetoria', s: 3, br: 'main', co: 'Conecta Softwares', role: 'Full stack', date: 'mar/2020', span: [2020.2, 2022.55], y: 2020.2, period: 'mar/2020 a jul/2022', txt: 'Core de um ERP em .NET, nos módulos fiscais: NF-e, NFC-e, entradas e pedidos.', stack: ['.NET', 'ASP.NET MVC', 'Vue', 'SQL Server'], vis: 'nfe', tags: ['Carreira'] },
-    { kind: 'era', lane: 0, set: 'trajetoria', s: 1, br: 'main', co: 'Vero Dellaudo', role: 'Estágio full stack', date: 'abr/2019', span: [2019.25, 2020.1], y: 2019.25, period: 'abr/2019 a fev/2020', txt: 'Sistemas web de gestão interna numa clínica de diagnóstico por imagem.', stack: ['PHP', 'Python', 'MySQL'], tags: ['Carreira'], root: 1 },
+    { kind: 'era', lane: 0, set: 'trajetoria', s: 1, br: 'main', co: 'Vero Dellaudo', role: 'Estágio full stack', date: 'abr/2019', span: [2019.25, 2020.1], y: 2019.25, period: 'abr/2019 a fev/2020', txt: 'Sistemas web de gestão interna numa clínica de diagnóstico por imagem.', stack: ['PHP', 'Python', 'MySQL'], refs: ['primeiro commit da main'], tags: ['Carreira'], root: 1 },
     { kind: 'edu', lane: 1, set: 'trajetoria', s: 2, br: 'formacao', title: 'UCS, Ciência da Computação', date: '2019', y: 2019.1, span: [2019, 2023.95], txt: 'Bacharelado em Caxias do Sul, em paralelo com o trabalho.', tags: ['Formação'] },
     { kind: 'year', label: '2015 a 2018', sub: 'onde começou' },
     { kind: 'edu', lane: 1, set: 'trajetoria', s: 0, br: 'formacao', title: 'IFRS, técnico em Informática', date: '2015', y: 2015.1, span: [2015, 2018.95], txt: 'Curso técnico no campus Farroupilha.', tags: ['Formação'], root: 1 },
@@ -63,7 +64,7 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
   const FILTERS = ['Tudo', 'Produto', 'Arquitetura', 'Time', 'Formação', 'Carreira'];
 
   /* ---------- markup ---------- */
-  const kick = (r) => (r.head ? 'Liderança, hoje' : setOf(r.set).tipo);
+  const refs = (r) => (r.refs || []).map((x) => `<em class="ref${x.startsWith('HEAD') ? ' ref--head' : ''}">${x}</em>`).join('');
   const tagchips = (r) => r.tags.map((t) => `<span class="chip">${t}</span>`).join('');
   const rowHtml = (r) => {
     const a = `data-row="${r.i}" data-br="${r.br}" data-tags="${(r.tags || []).join('|')}"`;
@@ -71,22 +72,22 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     if (r.kind === 'year') return `<li class="yr" aria-hidden="true"><span class="yr__l">${r.label}</span><span class="yr__s">${r.sub}</span></li>`;
     if (r.kind === 'c') { const st = setOf(r.set).stories[r.s]; return `<li class="r r--c in-${r.lane}"><button type="button" ${a}><span class="c__k">${st.k}</span><span class="c__t">${st.t}</span></button></li>`; }
     if (r.kind === 'm' && !r.edu) return `<li class="r r--m r--${r.set}"><button type="button" ${a}>
-      <span class="m__k">${kick(r)}</span>
+      <span class="m__git">Merge branch '${BR[r.merge]}' ${refs(r)}</span>
       <span class="m__body"><span class="m__vis">${TEASE[r.set]()}</span><span class="m__txt"><span class="m__t">${r.title}</span>${cgi(r.set)}<span class="m__tags">${tagchips(r)}<span class="m__go">Ver a história ${icon('right', { size: 16 })}</span></span></span></span></button></li>`;
     if (r.kind === 'm' && r.set === 'pelos') return `<li class="r r--m r--edu r--pelos"><button type="button" ${a}>
-      <span class="m__k">Projeto da faculdade</span>
+      <span class="m__git">Merge branch 'pelos-caminhos' into formacao</span>
       <span class="m__body"><span class="m__vis">${Z.scan()}</span><span class="m__txt"><span class="m__t">Pelos Caminhos</span>${cgi('pelos')}<span class="m__tags">${tagchips(r)}<span class="m__go">Ver a história ${icon('right', { size: 16 })}</span></span></span></span></button></li>`;
-    if (r.kind === 'm') return `<li class="r r--grad"><button type="button" ${a}><span class="m__k">Formação, ${r.date}</span><span class="g__t">${icon('cap', { size: 22 })}${r.title}</span><span class="g__d">UCS, Caxias do Sul. Quatro anos de faculdade em paralelo com o trabalho.</span><span class="g__vis">${V.parallel()}</span></button></li>`;
-    if (r.kind === 'tag') return `<li class="r r--tag"><button type="button" ${a}><span class="t__ref"><time>${r.date}</time></span><span class="t__t">${r.title}</span><span class="t__d">Lidero o time de engenharia do PilarHomes, nas duas cidades.</span></button></li>`;
-    if (r.kind === 'era') return `<li class="r r--era${r.vis ? ' r--era-v' : ''}"><button type="button" ${a}><span class="e__p">${r.period}</span><span class="e__co">${r.co}</span><span class="e__role">${r.role}</span><span class="e__txt">${r.txt}</span><span class="e__tr">${Z.track(r.span[0], r.span[1], 'tz-ink-f')}</span><span class="e__st">${r.stack.map((s) => `<span>${s}</span>`).join('')}</span>${r.vis ? `<span class="e__vis">${V[r.vis]()}</span>` : ''}</button></li>`;
+    if (r.kind === 'm') return `<li class="r r--grad"><button type="button" ${a}><span class="m__git">Merge branch 'formacao' · ${r.date}</span><span class="g__t">${icon('cap', { size: 22 })}${r.title}</span><span class="g__d">UCS, Caxias do Sul. Quatro anos de faculdade em paralelo com o trabalho.</span><span class="g__vis">${V.parallel()}</span></button></li>`;
+    if (r.kind === 'tag') return `<li class="r r--tag"><button type="button" ${a}><span class="t__ref">${refs(r)}<time>${r.date}</time></span><span class="t__t">${r.title}</span><span class="t__d">Lidero o time de engenharia do PilarHomes, nas duas cidades.</span></button></li>`;
+    if (r.kind === 'era') return `<li class="r r--era${r.vis ? ' r--era-v' : ''}"><button type="button" ${a}><span class="e__p">${r.period}${refs(r)}</span><span class="e__co">${r.co}</span><span class="e__role">${r.role}</span><span class="e__txt">${r.txt}</span><span class="e__tr">${Z.track(r.span[0], r.span[1], 'tz-ink-f')}</span><span class="e__st">${r.stack.map((s) => `<span>${s}</span>`).join('')}</span>${r.vis ? `<span class="e__vis">${V[r.vis]()}</span>` : ''}</button></li>`;
     return `<li class="r r--eduk"><button type="button" ${a}><span class="m__k">Formação, ${r.date}</span><span class="g__t">${icon('cap', { size: 20 })}${r.title}</span><span class="g__d">${r.txt}</span></button></li>`;
   };
   const BLK = {
-    remote: () => `<li class="blk blk--remote"><h3 class="blk__h3">De onde eu trabalho</h3><div class="blk__body"><div class="blk__vis">${V.remote()}</div><dl class="rm">
+    remote: () => `<li class="blk blk--remote"><p class="blk__cmd"><span class="p">$</span> git remote -v</p><div class="blk__body"><div class="blk__vis">${V.remote()}</div><dl class="rm">
       <div><dt>Caxias do Sul</dt><dd>UCS, Vero e Conecta. Hoje trabalho daqui, remoto.</dd></div>
       <div><dt class="rm--edu">Farroupilha</dt><dd>IFRS, onde fiz o técnico em Informática.</dd></div>
       <div><dt class="rm--acc">São Paulo e Curitiba</dt><dd>As duas cidades que o PilarHomes atende.</dd></div></dl></div></li>`,
-    shortlog: () => `<li class="blk blk--sl"><h3 class="blk__h3">Quanto tempo fiquei em cada cargo</h3>${V.shortlog()}</li>`,
+    shortlog: () => `<li class="blk blk--sl"><p class="blk__cmd"><span class="p">$</span> git shortlog -s --since=2019 <span class="blk__h">meses por cargo</span></p>${V.shortlog()}</li>`,
   };
   const HOW = [
     ['Entro na decisão antes de virar tarefa', 'Sento com produto e design enquanto a ideia ainda está no quadro. Peso o que muda para quem usa, o custo e a prioridade frente ao resto do roadmap, e a tarefa chega ao time com a arquitetura desenhada.', 'custo, impacto e prioridade'],
@@ -98,7 +99,7 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
   const RUN = [
     ['Alguém do time abre a task no Jira.', 0],
     ['Um agente escreve a história a partir do Figma, e o time revisa.', 1],
-    ['Quem pegou a task escreve o código.', 0],
+    ['Quem pegou a task escreve o código. Algumas tasks vão direto para um agente de IA, e alguém do time revisa.', 0],
     ['O code review abre sozinho quando o código sobe.', 1],
     ['Sobe um ambiente de teste, e a IA testa antes de ele chegar ao time.', 1],
     ['Os fluxos e2e percorrem o caminho de quem usa o produto.', 1],
@@ -140,15 +141,15 @@ ${topbar('cv', './')}
   <ol class="how__list">${HOW.map(([t, p, a], i) => `<li class="how__i"><span class="how__n" aria-hidden="true">${i + 1}</span><h3 class="how__t">${t}</h3><p class="how__p">${p}</p><p class="how__a">${a.charAt(0).toUpperCase()}${a.slice(1)}</p></li>`).join('')}</ol>
 </section>
 <section class="hist" aria-labelledby="hist-h">
-  <div class="hist__head"><h2 class="sec__h" id="hist-h">Histórico</h2><p class="sec__p">Do primeiro estágio, em 2019, até liderar um time. A linha da esquerda é a minha carreira; cada projeto sai dela e volta quando foi entregue. Toque num projeto para ver a história completa.</p></div>
+  <div class="hist__head"><h2 class="sec__h" id="hist-h">Histórico</h2><p class="sec__p">Minha carreira como um <code translate="no">git log</code>. Cada projeto é uma branch que volta num merge. Toque num projeto para ver a história completa.</p></div>
 </section>
 <div class="tagbar" role="group" aria-label="Filtrar o histórico"><span class="tagbar__l">Filtrar</span>${FILTERS.map((f, i) => `<button type="button" data-f="${f}" aria-pressed="${!i}">${f}</button>`).join('')}</div>
 <main class="stage">
   <section class="log" id="historico" aria-label="Histórico de carreira e projetos">
     <svg class="graph" aria-hidden="true"><defs><clipPath id="pen"><rect x="-20" y="-40" width="400" height="0"/></clipPath></defs><g class="g-edges" clip-path="url(#pen)"></g><g class="g-nodes"></g></svg>
     <ol class="rows">${ROWS.map(rowHtml).join('')}</ol>
-    <div class="blk blk--sm"><h3 class="blk__h3">O que usei em cada empresa</h3>${V.stackmap()}</div>
-    <div class="stack"><h3 class="stack__h">Com o que trabalho hoje</h3><ol>
+    <div class="blk blk--sm"><p class="blk__cmd"><span class="p">$</span> git log --stat --since=2019 -- stack/ <span class="blk__h">o que usei em cada empresa</span></p>${V.stackmap()}</div>
+    <div class="stack"><p class="stack__h"><code translate="no">$ cat stack.txt</code></p><ol>
       <li><span>Front e BFF</span>Nuxt, Node</li><li><span>APIs e lambdas</span>Python</li><li><span>Dados</span>MongoDB Atlas</li><li><span>Infra</span>AWS ECS, Lambda, SQS, CloudFront, ElastiCache, Pulumi</li><li><span>Entrega</span>GitLab CI/CD, Docker</li><li><span>Observabilidade</span>Datadog, Mixpanel</li></ol></div>
   </section>
   <aside class="peek" aria-live="polite"><div class="peek__in"></div></aside>
@@ -170,7 +171,7 @@ ${topbar('cv', './')}
   const lw = () => (innerWidth < 768 ? 15 : 28), X = (l) => 10 + l * lw();
   function layout() {
     // offsetTop ignora o translate da animação de entrada; o nó fica na primeira linha de cada cartão
-    const ANC = { c: '.c__k', m: '.m__k', tag: '.t__ref', era: '.e__p', edu: '.m__k' };
+    const ANC = { c: '.c__k', m: '.m__git', tag: '.t__ref', era: '.e__p', edu: '.m__k' };
     ys = ROWS.map((r) => { if (NOG(r)) return null; const b = list.querySelector(`[data-row="${r.i}"]`), li = b.parentElement, a = b.querySelector(ANC[r.kind]); const lr = li.getBoundingClientRect(), ar = a.getBoundingClientRect(); return Math.round(li.offsetTop - list.offsetTop + (ar.top - lr.top) + ar.height / 2); });
     H = list.offsetHeight; svg.setAttribute('viewBox', `0 0 ${X(2) + 14} ${H}`); svg.style.width = `${X(2) + 14}px`; svg.style.height = `${H}px`;
     const P = [], S = (a, b) => Math.min(42, (b - a) / 3);
@@ -286,7 +287,7 @@ ${topbar('cv', './')}
 
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden && $('#st').hidden) closeSheet(); });
   let lastW = innerWidth; addEventListener('resize', () => { if (innerWidth !== lastW) { lastW = innerWidth; layout(); } });
-  const align = () => { const ANC = { c: '.c__k', m: '.m__k', tag: '.t__ref', era: '.e__p', edu: '.m__k' }; let worst = 0, at = null; G.forEach((r) => { const n = nodes.querySelector(`[data-row="${r.i}"] .n-dot`).getBoundingClientRect(), a = list.querySelector(`[data-row="${r.i}"] ${ANC[r.kind]}`).getBoundingClientRect(); const d = Math.abs((n.top + n.height / 2) - (a.top + a.height / 2)); if (d > worst) { worst = d; at = r.i; } }); return { worst: Math.round(worst * 10) / 10, at }; };
+  const align = () => { const ANC = { c: '.c__k', m: '.m__git', tag: '.t__ref', era: '.e__p', edu: '.m__k' }; let worst = 0, at = null; G.forEach((r) => { const n = nodes.querySelector(`[data-row="${r.i}"] .n-dot`).getBoundingClientRect(), a = list.querySelector(`[data-row="${r.i}"] ${ANC[r.kind]}`).getBoundingClientRect(); const d = Math.abs((n.top + n.height / 2) - (a.top + a.height / 2)); if (d > worst) { worst = d; at = r.i; } }); return { worst: Math.round(worst * 10) / 10, at }; };
   window.__depoimentos = (lista) => { $('.dp-slot').innerHTML = depoimentos(lista); layout(); };
   window.__home = { show, open: (id) => openSet(id, 0), layout, setTag, align, rowY: (i) => gTop + ys[i], rows: ROWS };
   return { start() { layout(); document.body.classList.add('ready'); if (wide()) showPeek(G[0]); } };
