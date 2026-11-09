@@ -532,6 +532,14 @@ h1,h2,h3,.top,.job,.m__t,.t__t,.e__co,.e__role,.g__t,.pk__t,.foot__h,.st__t,.st_
 .run__h{margin:0;font:800 18px/24px var(--sans);letter-spacing:-.015em;text-wrap:balance;min-width:0}
 .run__list{list-style:none;padding:var(--s2) var(--s4) var(--s3);margin:0}
 .run__i{position:relative;display:grid;grid-template-columns:16px minmax(0,1fr);column-gap:var(--s3);padding:var(--s2) 0 var(--s3)}
+@media (max-width:519px){
+  .run__task{padding:var(--s3) var(--s3) var(--s1)}
+  .run__list{padding:var(--s1) var(--s3) var(--s2)}
+  .run__i{padding:var(--s1) 0 var(--s2)}
+  .run__t{font-size:14px;line-height:20px}
+  .run__cap{padding:var(--s2) var(--s3) var(--s3);font-size:13px;line-height:18px}
+}
+.run__who--produto{color:var(--ink)}
 .run__i::before{content:'';position:absolute;left:7px;top:22px;bottom:-6px;width:2px;border-radius:1px;background:var(--line2)}
 .run__i:last-child::before{display:none}
 .run__node{grid-row:1 / span 2;margin-top:4px;width:16px;height:16px;border-radius:50%;background:var(--acc);box-shadow:inset 0 0 0 4px #151816,inset 0 0 0 6px var(--acc);position:relative;z-index:1}
