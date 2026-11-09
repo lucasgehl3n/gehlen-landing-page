@@ -206,7 +206,11 @@ ${cafeHtml()}
     const mid = scrollY + innerHeight * 0.45 - gTop; let best = null, bd = 1e9;
     G.forEach((r) => { const d = Math.abs(ys[r.i] - mid); if (d < bd && !hiddenRow(r)) { bd = d; best = r; } });
     if (best && best !== spy) { spy = best; if (!hoverRow && wide()) showPeek(best); updScrub(); }
-    $('.scrub').classList.toggle('on', mid > -200 && mid < H + 200);
+    // Scrub só no histórico: some se o hero ainda cobre a metade de baixo da tela.
+    const heroBottom = document.querySelector('.hero')?.getBoundingClientRect().bottom ?? 0;
+    const logBox = list.getBoundingClientRect();
+    const inHist = heroBottom < innerHeight * 0.55 && logBox.top < innerHeight - 64 && logBox.bottom > innerHeight * 0.3 && mid > 0 && mid < H;
+    $('.scrub').classList.toggle('on', inHist);
     ticking = false;
   }
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => onScroll()); } }, { passive: true });
@@ -266,7 +270,12 @@ ${cafeHtml()}
   /* ---------- linha do tempo (scrub) em escala real ---------- */
   const dated = G.filter((r) => r.y).sort((a, b) => a.y - b.y);
   const tr = $('.scrub__t'), th = $('.scrub__th'), yl = $('.scrub__y');
-  tr.insertAdjacentHTML('afterbegin', Array.from({ length: 12 }, (_, i) => `<b style="left:${(i / 11) * 100}%" class="${(2015 + i) % 5 === 0 || i === 11 ? 'big' : ''}"><span>${i === 11 ? 'hoje' : 2015 + i}</span></b>`).join('') + dated.map((r) => `<s style="left:${((r.y - 2015) / 11) * 100}%" class="${r.kind === 'edu' || r.edu ? 'edu' : ''}"></s>`).join(''));
+  // Rótulos só em 2015, 2020 e hoje — 2025 colidia com 'hoje' no celular.
+  tr.insertAdjacentHTML('afterbegin', Array.from({ length: 12 }, (_, i) => {
+    const end = i === 11, big = i === 0 || i === 5 || end;
+    const edge = i === 0 ? ' big--start' : end ? ' big--end' : '';
+    return `<b style="left:${(i / 11) * 100}%" class="${big ? `big${edge}` : ''}"><span>${end ? 'hoje' : 2015 + i}</span></b>`;
+  }).join('') + dated.map((r) => `<s style="left:${((r.y - 2015) / 11) * 100}%" class="${r.kind === 'edu' || r.edu ? 'edu' : ''}"></s>`).join(''));
   function yearAt(r) {
     if (r.y) return r.y; const idx = G.indexOf(r); const up = G.slice(0, idx).reverse().find((x) => x.y), dn = G.slice(idx).find((x) => x.y);
     return up && dn ? (up.y + dn.y) / 2 : (up || dn)?.y || 2026;

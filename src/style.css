@@ -257,7 +257,9 @@ code{font-size:.92em}
 .scrub__y{font:700 14px var(--sans);min-width:4ch;color:var(--acc);font-variant-numeric:tabular-nums}
 .scrub__t{position:relative;flex:1;height:32px;cursor:ew-resize;touch-action:none;border-radius:4px}
 .scrub__t b{position:absolute;top:6px;width:1px;height:8px;background:rgba(var(--ink-rgb),.3)}.scrub__t b.big{height:12px;top:4px;background:rgba(var(--ink-rgb),.6)}
-.scrub__t b span{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--mut);display:none}.scrub__t b.big span{display:block}
+.scrub__t b span{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--mut);display:none;white-space:nowrap}.scrub__t b.big span{display:block}
+.scrub__t b.big--start span{left:0;transform:none}
+.scrub__t b.big--end span{left:auto;right:0;transform:none}
 .scrub__t s{position:absolute;top:8px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--ink)}.scrub__t s.edu{background:var(--edu)}
 .scrub__th{position:absolute;top:0;width:3px;height:22px;margin-left:-1.5px;border-radius:2px;background:var(--acc);transition:left .25s var(--ease)}
 /* prévia */
