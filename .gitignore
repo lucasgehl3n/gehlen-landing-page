@@ -1,0 +1,10 @@
+node_modules
+dist/
+shots/
+test-report.json
+*.png
+*.webm
+*.mp4
+.env
+.env.*
+.DS_Store
