@@ -96,15 +96,15 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     ['Organizo a entrega quando o prazo aperta', 'Quebro o trabalho em partes que cabem no prazo, divido as tarefas e fico perto de quem travou. O time pedia feature flags havia tempo; pesquisei, testei e implementei, e hoje cada parte liga primeiro para poucos.', 'flag: time interno, parte do público, todos'],
     ['Acompanho quem chega e sigo estudando', 'Fico perto de quem acabou de entrar e marco conversas de retorno para cada pessoa crescer. Mantenho runbooks e o guia de merge request, e o que estudo vira tech talk para o time.', 'runbooks, guia de MR e tech talks'],
   ];
-  // Pipeline estático: uma task do Jira ao e2e. who: time | ia. Sem animação em loop.
+  // Pipeline estático: quem faz cada passo (time e/ou agente). Sem animação em loop.
   const RUN = [
-    ['Task criada no Jira', 'jira', 'time'],
-    ['História escrita a partir do Figma', 'figma → jira', 'ia'],
-    ['Quem pegou a task escreve o código. Algumas tasks vão direto para um agente de IA, e alguém do time revisa.', 'git', 'time'],
-    ['Code review aberto sozinho', 'review', 'ia'],
-    ['Ambiente de teste no ar, testado pela IA', 'ambiente', 'ia'],
-    ['Fluxos e2e conferidos', 'e2e', 'ia'],
-    ['Ambiente liberado para o time validar', 'slack', 'time'],
+    ['Task criada no Jira', 'jira', ['time']],
+    ['Quebra e refino da task com julgamento do time', 'refino', ['time']],
+    ['História a partir do Figma; alguém do time revisa', 'figma → jira', ['ia', 'time']],
+    ['Quem pegou a task escreve o código. Algumas tasks vão direto para um agente de IA, e alguém do time revisa.', 'git', ['time', 'ia']],
+    ['Code review aberto; o time decide o que mergeia', 'review', ['ia', 'time']],
+    ['Ambiente de teste no ar, testado pela IA', 'ambiente', ['ia']],
+    ['Time valida, coordena a sprint e decide o que entra', 'slack', ['time']],
   ];
   const IA = [
     ['Tasks automatizadas', 'Automatizei tasks com Jira, Slack e agentes de IA, para o time gastar menos tempo com rotina de ferramenta.'],
@@ -128,8 +128,8 @@ ${topbar('cv', './')}
   </div>
   <figure class="run" aria-labelledby="run-h">
     <div class="run__task"><span class="run__k">task</span><h2 class="run__h" id="run-h">Uma task, do Jira ao e2e</h2></div>
-    <ol class="run__list">${RUN.map(([t, src, who]) => `<li class="run__i${who === 'ia' ? ' run__i--ia' : ''}" data-s="ok"><span class="run__node" aria-hidden="true"></span><span class="run__t">${t}</span><span class="run__m"><code translate="no">${src}</code><span class="run__who run__who--${who}">${who === 'ia' ? 'agente de IA' : 'time'}</span></span></li>`).join('')}</ol>
-    <figcaption class="run__cap">A IA cuida do repetitivo. O time decide o que entra.</figcaption>
+    <ol class="run__list">${RUN.map(([t, src, who]) => { const w = Array.isArray(who) ? who : [who]; const ia = w.includes('ia'); const tags = w.map((x) => `<span class="run__who run__who--${x}">${x === 'ia' ? 'agente de IA' : 'time'}</span>`).join(''); return `<li class="run__i${ia ? ' run__i--ia' : ''}" data-s="ok"><span class="run__node" aria-hidden="true"></span><span class="run__t">${t}</span><span class="run__m"><code translate="no">${src}</code>${tags}</span></li>`; }).join('')}</ol>
+    <figcaption class="run__cap">A IA adianta o repetitivo. O time revisa, coordena e decide o que entra.</figcaption>
   </figure>
 </section>
 <section class="ia" id="ia" aria-labelledby="ia-h">
