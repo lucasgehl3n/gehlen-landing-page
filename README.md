@@ -22,7 +22,7 @@ npx playwright install chromium   # só na primeira vez
 npm test
 ```
 
-O teste gera o build e roda o Playwright em 390x844 e 1440x900: grafo desenhado no scroll, prévia, terminal, linha do tempo, stories (toque, swipe, segurar para pausar), rodapé, contraste AA de todo texto visível, movimento reduzido, fps e erros de console. Os prints e vídeos vão para `shots/`, que fica fora do git.
+O teste gera o build e roda o Playwright em 390x844, 768x1024, 1440x900 e 1920x1080: alinhamento dos nós com os cartões, sem rolagem horizontal, grafo desenhado no scroll, prévia, terminal, linha do tempo, stories (toque, swipe, segurar para pausar), rodapé, contraste AA de todo texto visível, movimento reduzido, fps e erros de console. Os prints e vídeos vão para `shots/`, que fica fora do git.
 
 ## Onde está cada coisa
 
@@ -40,3 +40,5 @@ O teste gera o build e roda o Playwright em 390x844 e 1440x900: grafo desenhado 
 ## Fontes
 
 Cabinet Grotesk vem da Fontshare (Indian Type Foundry, licença ITF Free Font). Geist Mono vem do pacote @fontsource.
+
+O contorno do mapa vem do Natural Earth (domínio público), pelo projeto world.geo.json.

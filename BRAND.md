@@ -85,3 +85,39 @@ Regra: cada visual demonstra algo verdadeiro do case, com acabamento de produto.
 
 ## Voz
 Primeira pessoa, frases curtas, verbo concreto ("propus", "liderei", "implementei"). Sem slogan, sem travessão, sem "não é X, é Y", sem número inventado. Fato da Pilar sempre com "segundo a VEJA" e link. Detalhe técnico vai para as Notas técnicas, sem nome de empresa.
+
+## Grid, espaçamento e tipo (benchmark de acabamento, 09/11/2026)
+
+Medi seis sites escuros de dev e design com Playwright em 390 e 1440 px (computed style de margens, colunas, corpo, títulos, raios e bordas). Os números estão em `benchmarks/polish/metrics.json`, fora do repo.
+
+| Site | Margem lateral | Coluna de texto | Corpo | Títulos | Raios e bordas | Ritmo |
+|---|---|---|---|---|---|---|
+| brittanychiang.com | 24 (390), 48 (768) | 2 colunas, texto 607 px | 16/26 | h1 36→48, -0.025em | pill, 4, 6; borda 2 px a 10% | 4, 8, 16, 48, 64, 96 |
+| linear.app | 24 → 32 | ~65ch | 16/24, p 15/24 | h1 38/56/64 a -0.022em, h2 com balance | 8 dominante, 4/6/12/16/pill; 1 px branco a 8% | 4, 6, 8, 12 |
+| vercel.com | 24 em todas | grid 12 col | 16/24, Geist | h1 48→64, -0.06em, balance | 6 dominante | seções 160–208 |
+| paco.me | 24 (390), 64 (768) | 640 px centrada | 16/28 | h1 16 | quase sem raio | 24, 64, 128 |
+| emilkowal.ski | 24 (390), 62 (768) | 644 px centrada | 16/26.4 | | 6 | 12, 64, 128 |
+| rauno.me | layout livre | | | | 12, pill | |
+
+O que adotei:
+
+- Escala de espaço em 4/8: `--s1..--s10` = 4, 8, 12, 16, 24, 32, 48, 64, 96, 128. Nenhuma margem fora dela.
+- Margem lateral `--gut`: 24 até 767, 32 a partir de 768, 48 a partir de 1024, 64 a partir de 1440 (média de Brittany, Paco e Emil). Conteúdo limitado a 1312 px; todas as seções usam a mesma borda (`--edge`, que também respeita `safe-area-inset`).
+- Breakpoints: 768 (trilhos do grafo 28 px e cartões com 2 colunas por container query), 1024 (hero em 2 colunas, rodapé em 2 colunas), 1200/1440 (painel de prévia de 360/384 px), 1920 (só centraliza, nada estica).
+- Texto corrido em 16/1.5 e no máximo ~52ch, perto do 607–644 px dos sites com coluna única.
+- Títulos com tracking negativo (-0.02 a -0.04em conforme o tamanho), `text-wrap: balance` em títulos e `pretty` em parágrafos para não sobrar palavra sozinha.
+- Raios 6, 12, 16, 24 e pill. Bordas de 1 px a 12% e 20% da cor do texto, como na Linear.
+- Ritmo vertical entre blocos de 48, 64 e 96.
+- Os nós do grafo são posicionados medindo o elemento âncora de cada cartão (hash, tag ou ano), então ficam na linha do texto em qualquer largura. O teste mede o pior desvio: 0,8 px.
+- Estados: foco visível em tudo, hover só em ponteiro fino, active com leve afundamento.
+
+## Visuais da home e de onde vêm
+
+Cada visual mostra um fato do LinkedIn ou de fonte pública:
+
+- `git remote -v`: mapa do Sul e Sudeste com Caxias do Sul (UCS, Vero, Conecta, trabalho remoto hoje), Farroupilha (IFRS) e as duas cidades que o PilarHomes atende. O contorno do Brasil vem do Natural Earth (domínio público), via world.geo.json.
+- `git shortlog`: meses por cargo, calculados a partir das datas reais no carregamento da página.
+- Stack no tempo: o que usei em cada empresa, linha por tecnologia, só com o que está no LinkedIn.
+- Compass/Vivo: portal B2B em micro frontends e um exemplo de mutante (`>` virando `>=`). É uma ilustração do conceito, sem telas nem nomes do projeto.
+- Conecta: ERP em .NET com os módulos fiscais que mantive (pedidos, entradas, NF-e, NFC-e).
+- Formação: faixa de anos em que estudei (IFRS, UCS) e trabalhei ao mesmo tempo.

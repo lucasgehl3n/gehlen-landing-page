@@ -3,7 +3,8 @@ const ROOT = new URL('.', import.meta.url).pathname.replace(/\/$/, ''); const D 
 const srv = spawn('python3', ['-m', 'http.server', String(port), '-d', `${ROOT}/dist`], { stdio: 'ignore' });
 await new Promise((r) => setTimeout(r, 700));
 const url = `http://127.0.0.1:${port}/`; const b = await chromium.launch(); const rep = {};
-const vps = { mobile: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }, desktop: { viewport: { width: 1440, height: 900 } } };
+const ALL = { mobile: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }, tablet: { viewport: { width: 768, height: 1024 }, isMobile: true, hasTouch: true }, desktop: { viewport: { width: 1440, height: 900 } }, wide: { viewport: { width: 1920, height: 1080 } } };
+const vps = Object.fromEntries(Object.entries(ALL).filter(([k]) => !process.env.VPS || process.env.VPS.split(',').includes(k)));
 async function drag(p, x1, y1, x2, y2, steps = 12) { await p.mouse.move(x1, y1); await p.mouse.down(); for (let i = 1; i <= steps; i++) { await p.mouse.move(x1 + (x2 - x1) * i / steps, y1 + (y2 - y1) * i / steps); await p.waitForTimeout(16); } await p.mouse.up(); }
 const open = (p) => p.evaluate(() => !document.querySelector('#st').hidden);
 const head = (p) => p.textContent('.st__head .state'); const k = (p) => p.textContent('.st__k');
@@ -34,9 +35,21 @@ const AA = () => {
 for (const [vn, opt] of Object.entries(vps)) {
   const ctx = await b.newContext(opt); const p = await ctx.newPage(); const errs = []; const ok = [];
   p.on('console', (m) => { if (['error', 'warning'].includes(m.type())) errs.push(m.text()); }); p.on('pageerror', (e) => errs.push(e.message));
+  const W = opt.viewport.width >= 1200;
   const shot = (n) => p.screenshot({ path: `${D}/lucas-gehlen-cv-${vn}-home-${n}.png` });
+  const shotEl = async (n, s) => { await p.evaluate((s) => { const e = document.querySelector(s); scrollTo({ top: e.getBoundingClientRect().top + scrollY - Math.max(120, (innerHeight - e.offsetHeight) / 2), behavior: 'instant' }); }, s); await p.waitForTimeout(1100); await shot(n); };
   await p.goto(url, { waitUntil: 'networkidle' }); await p.waitForTimeout(1200);
   await shot('1-topo');
+  // grid e alinhamento: percorre a página para acender tudo e mede nó x âncora do cartão
+  for (let y = 0; y < 14000; y += 700) { await p.evaluate((y) => scrollTo({ top: y, behavior: 'instant' }), y); await p.waitForTimeout(60); }
+  await p.waitForTimeout(700);
+  const al = await p.evaluate(() => window.__home.align()); rep[vn + 'Align'] = al;
+  ok.push([`nós alinhados com a linha do cartão (pior caso ${al.worst}px)`, al.worst <= 2]);
+  ok.push(['sem rolagem horizontal', await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth)]);
+  ok.push(['visuais novos: mapa, shortlog, stack no tempo, Compass, Conecta, formação', await p.evaluate(() => !!document.querySelector('.blk--remote .vz-map') && document.querySelectorAll('.sl__r').length === 5 && document.querySelectorAll('.sm__r').length === 12 && document.querySelectorAll('.r--era-v .e__vis svg').length >= 3 && !!document.querySelector('.g__vis svg'))]);
+  await shotEl('v1-remote', '.blk--remote'); await shotEl('v2-shortlog', '.blk--sl'); await shotEl('v3-compass', '.r--era-v');
+  await shotEl('v4-conecta', '.r--era-v:nth-of-type(n) ~ .r--era-v'); await shotEl('v5-formacao', '.r--grad'); await shotEl('v6-stack', '.blk--sm');
+  await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(500);
   ok.push(['grafo com branches, nós e HEAD pulsando', await p.evaluate(() => document.querySelectorAll('.graph .node').length > 30 && document.querySelectorAll('.graph .edge').length >= 8 && !!document.querySelector('.n-pulse'))]);
   // grafo escrito no scroll
   const clip0 = await p.evaluate(() => +document.querySelector('#pen rect').getAttribute('height'));
@@ -48,10 +61,10 @@ for (const [vn, opt] of Object.entries(vps)) {
   // prévia
   const sh = await rowIdx(p, "r.kind==='c'&&r.set==='shorts'&&r.s===1"); await toRow(p, sh, 0.5); await p.waitForTimeout(500);
   const btn = p.locator(`button[data-row="${sh}"]`);
-  if (vn === 'desktop') { await btn.hover(); await p.waitForTimeout(500); ok.push(['hover no commit mostra prévia rica no painel', (await p.textContent('.peek__in')).includes('infraestrutura') && (await p.locator('.peek__in .tz').count()) > 0]); }
+  if (W) { await btn.hover(); await p.waitForTimeout(500); ok.push(['hover no commit mostra prévia rica no painel', (await p.textContent('.peek__in')).includes('infraestrutura') && (await p.locator('.peek__in .tz').count()) > 0]); }
   else { await btn.tap(); await p.waitForTimeout(500); ok.push(['toque no commit abre folha de prévia', await p.evaluate(() => !document.querySelector('.sheet').hidden && document.querySelector('.sheet__c').textContent.includes('infraestrutura'))]); }
   await shot('3-preview');
-  await p.click(vn === 'desktop' ? '.peek__in .pk__open' : '.sheet__c .pk__open'); await p.waitForTimeout(600);
+  await p.click(W ? '.peek__in .pk__open' : '.sheet__c .pk__open'); await p.waitForTimeout(600);
   ok.push(['botão da prévia abre os stories no story certo', (await open(p)) && (await k(p)).includes('2 de 4')]);
   // stories: gestos
   const box = await p.locator('#card').boundingBox();
@@ -65,15 +78,15 @@ for (const [vn, opt] of Object.entries(vps)) {
   ok.push(['swipe troca de projeto', !(await head(p)).includes('Shorts')]);
   await drag(p, box.x + box.width * 0.5, box.y + box.height * 0.2, box.x + box.width * 0.52, box.y + box.height * 0.7); await p.waitForTimeout(600);
   ok.push(['swipe para baixo fecha', !(await open(p))]);
-  if (vn === 'mobile') { await p.evaluate(() => document.querySelector('[data-sheet-close]')?.click()); await p.waitForTimeout(300); }
+  if (!W) { await p.evaluate(() => document.querySelector('[data-sheet-close]')?.click()); await p.waitForTimeout(300); }
   // terminal
   await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(300);
   await typeCmd(p, 'git log --tag=formacao');
   ok.push(['git log --tag=formacao filtra o grafo', await p.evaluate(() => document.querySelectorAll('.r.off').length > 15 && document.querySelector('[data-f="Formação"]').getAttribute('aria-pressed') === 'true')]);
   await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(300);
   await typeCmd(p, 'git show pelos-caminhos'); await p.waitForTimeout(500);
-  ok.push(['git show pelos-caminhos abre a prévia', vn === 'desktop' ? (await p.textContent('.peek__in')).includes('Pelos Caminhos') : await p.evaluate(() => !document.querySelector('.sheet').hidden && document.querySelector('.sheet__c').textContent.includes('Pelos Caminhos'))]);
-  if (vn === 'mobile') { await p.click('[data-sheet-close]'); await p.waitForTimeout(300); }
+  ok.push(['git show pelos-caminhos abre a prévia', W ? (await p.textContent('.peek__in')).includes('Pelos Caminhos') : await p.evaluate(() => !document.querySelector('.sheet').hidden && document.querySelector('.sheet__c').textContent.includes('Pelos Caminhos'))]);
+  if (!W) { await p.click('[data-sheet-close]'); await p.waitForTimeout(300); }
   await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(200);
   await p.click('[data-cmd="git branch"]'); await p.waitForTimeout(1200);
   ok.push(['sugestão clicável roda o comando', (await p.textContent('.term__out')).includes('segunda-cidade')]);
@@ -119,15 +132,16 @@ await c3.close();
 // vídeos curtos: grafo escrito no scroll + interação
 for (const [vn, opt] of Object.entries(vps)) {
   const ctx = await b.newContext({ ...opt, recordVideo: { dir: `/tmp/rsv-${vn}`, size: opt.viewport } }); const p = await ctx.newPage();
+  const W = opt.viewport.width >= 1200;
   await p.goto(url, { waitUntil: 'networkidle' }); await p.waitForTimeout(900);
   await p.click('[data-cmd="git show shorts-hls"]'); await p.waitForTimeout(1600);
-  if (vn === 'mobile') { await p.click('[data-sheet-close]'); await p.waitForTimeout(300); }
+  if (!W) { await p.click('[data-sheet-close]'); await p.waitForTimeout(300); }
   await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(300);
-  for (let i = 0; i < 46; i++) { await p.mouse.wheel(0, vn === 'mobile' ? 110 : 120); await p.waitForTimeout(70); }
+  for (let i = 0; i < 70; i++) { await p.mouse.wheel(0, 130); await p.waitForTimeout(60); }
   const i = await p.evaluate(() => window.__home.rows.findIndex((r) => r.merge === 'pelos'));
   await p.evaluate((i) => scrollTo({ top: window.__home.rowY(i) - innerHeight * 0.45, behavior: 'smooth' }), i); await p.waitForTimeout(1200);
   const bt = p.locator(`button[data-row="${i}"]`);
-  if (vn === 'desktop') { await bt.hover(); await p.waitForTimeout(1200); await bt.click(); } else { await bt.tap(); await p.waitForTimeout(1300); await p.click('.sheet__c .pk__open'); }
+  if (W) { await bt.hover(); await p.waitForTimeout(1200); await bt.click(); } else { await bt.tap(); await p.waitForTimeout(1300); await p.click('.sheet__c .pk__open'); }
   await p.waitForTimeout(1800); await p.click('[data-b="raca"]'); await p.waitForTimeout(1200); await p.keyboard.press('Escape'); await p.waitForTimeout(600);
   const t = await p.locator('.scrub__t').boundingBox(); await drag(p, t.x + t.width * 0.95, t.y + 10, t.x + t.width * 0.15, t.y + 10, 30); await p.waitForTimeout(900);
   const vid = await p.video().path(); await ctx.close(); fs.copyFileSync(vid, `${D}/lucas-gehlen-cv-${vn}-home.webm`);
