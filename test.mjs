@@ -82,7 +82,9 @@ for (const [vn, opt] of Object.entries(vps)) {
       && document.querySelectorAll('.run__i--ia').length >= 4
       && document.querySelectorAll('.run__who--time').length >= 5
       && document.querySelectorAll('.run__who--ia').length >= 4
-      && document.querySelectorAll('.run__who--produto').length >= 1
+      && document.querySelectorAll('.run__m code').length >= 1
+      && [...document.querySelectorAll('.run__m code')].filter((c) => c.textContent === 'produto').length === 1
+      && document.querySelectorAll('.run__who--produto').length === 0
       && steps.some((s) => /decide o que entra e por quê/i.test(s))
       && steps.some((s) => /julgamento do time|refino/i.test(s))
       && steps.some((s) => /Fluxos e2e conferidos/i.test(s))

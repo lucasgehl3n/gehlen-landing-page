@@ -99,7 +99,7 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
   // Pipeline estático: quem faz cada passo (time, produto e/ou agente). Sem animação em loop.
   const WHO = { time: 'time', ia: 'agente de IA', produto: 'produto' };
   const RUN = [
-    ['Time decide o que entra e por quê', 'produto', ['produto', 'time']],
+    ['Time decide o que entra e por quê', 'produto', ['time']],
     ['Task criada no Jira', 'jira', ['time']],
     ['Quebra e refino com julgamento do time', 'refino', ['time']],
     ['História a partir do Figma; o time revisa', 'figma → jira', ['ia', 'time']],
