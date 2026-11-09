@@ -206,11 +206,12 @@ ${cafeHtml()}
     const mid = scrollY + innerHeight * 0.45 - gTop; let best = null, bd = 1e9;
     G.forEach((r) => { const d = Math.abs(ys[r.i] - mid); if (d < bd && !hiddenRow(r)) { bd = d; best = r; } });
     if (best && best !== spy) { spy = best; if (!hoverRow && wide()) showPeek(best); updScrub(); }
-    // Scrub só no histórico: some se o hero ainda cobre a metade de baixo da tela.
-    const heroBottom = document.querySelector('.hero')?.getBoundingClientRect().bottom ?? 0;
-    const logBox = list.getBoundingClientRect();
-    const inHist = heroBottom < innerHeight * 0.55 && logBox.top < innerHeight - 64 && logBox.bottom > innerHeight * 0.3 && mid > 0 && mid < H;
-    $('.scrub').classList.toggle('on', inHist);
+    // Scrub só com o histórico na tela e com o hero inteiro fora (inclui o card da task).
+    const heroBox = document.querySelector('.hero')?.getBoundingClientRect();
+    const histBox = document.querySelector('#historico')?.getBoundingClientRect();
+    const heroOnScreen = !!heroBox && heroBox.bottom > 0 && heroBox.top < innerHeight;
+    const histOnScreen = !!histBox && histBox.top < innerHeight - 48 && histBox.bottom > 48;
+    $('.scrub').classList.toggle('on', !heroOnScreen && histOnScreen);
     ticking = false;
   }
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => onScroll()); } }, { passive: true });

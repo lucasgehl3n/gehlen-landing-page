@@ -81,10 +81,18 @@ for (const [vn, opt] of Object.entries(vps)) {
   const mapa = await rowIdx(p, "r.merge==='mapa'"); await toRow(p, mapa); await p.waitForTimeout(900);
   const clip1 = await p.evaluate(() => +document.querySelector('#pen rect').getAttribute('height'));
   ok.push(['scroll escreve o grafo (clip cresce e nós acendem)', clip1 > clip0 + 300 && (await p.evaluate(() => document.querySelectorAll('.node.lit').length)) > 10]);
-  await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(500);
-  ok.push(['linha do tempo some no hero', await p.evaluate(() => { const h = document.querySelector('.hero').getBoundingClientRect(); return h.bottom > innerHeight * 0.5 && !document.querySelector('.scrub.on'); })]);
+  await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(400);
+  ok.push(['scrub some no topo do hero', await p.evaluate(() => !document.querySelector('.scrub.on'))]);
+  // card da task centrado: qualquer pedaço do hero na tela ⇒ scrub off
+  await p.evaluate(() => { const c = document.querySelector('.run'); scrollTo({ top: c.getBoundingClientRect().top + scrollY - (innerHeight - c.getBoundingClientRect().height) / 2, behavior: 'instant' }); });
+  await p.waitForTimeout(400);
+  ok.push(['scrub some com o card da task na tela', await p.evaluate(() => { const h = document.querySelector('.hero').getBoundingClientRect(); return h.bottom > 0 && h.top < innerHeight && !document.querySelector('.scrub.on'); })]);
+  // só a borda de baixo do hero ainda visível
+  await p.evaluate(() => { const h = document.querySelector('.hero'); scrollTo({ top: h.getBoundingClientRect().bottom + scrollY - 40, behavior: 'instant' }); });
+  await p.waitForTimeout(400);
+  ok.push(['scrub some com a borda do hero ainda visível', await p.evaluate(() => { const h = document.querySelector('.hero').getBoundingClientRect(); return h.bottom > 0 && !document.querySelector('.scrub.on'); })]);
   await toRow(p, mapa); await p.waitForTimeout(600);
-  ok.push(['linha do tempo aparece no histórico e marca o ano', await p.evaluate(() => !!document.querySelector('.scrub.on') && /20\d\d|hoje/.test(document.querySelector('.scrub__y').textContent))]);
+  ok.push(['linha do tempo aparece no histórico e marca o ano', await p.evaluate(() => { const h = document.querySelector('.hero').getBoundingClientRect(); return h.bottom <= 0 && !!document.querySelector('.scrub.on') && /20\d\d|hoje/.test(document.querySelector('.scrub__y').textContent); })]);
   ok.push(['rótulos do scrub sem colisão 2025hoje', await p.evaluate(() => { const labs = [...document.querySelectorAll('.scrub__t b.big span')].map((s) => s.textContent); return labs.includes('2015') && labs.includes('2020') && labs.includes('hoje') && !labs.includes('2025'); })]);
   await shot('2-meio');
   // prévia
