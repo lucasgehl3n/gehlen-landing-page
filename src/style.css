@@ -410,7 +410,7 @@ code{font-size:.92em}
 .fl .seg{flex-wrap:wrap}
 
 /* ---------- Tipo: Cabinet nos títulos e botões, Geist no texto corrido ---------- */
-h1,h2,h3,.top,.job,.m__t,.t__t,.e__co,.e__role,.g__t,.pk__t,.foot__h,.st__t,.st__head .state b,.sec__h,.cta,.tagbar button,.pk__open,.m__go,.foot__send,.st__link,.sl__who b,.dp__n,.base__co,.base__role,.base__more,.lst li{font-family:var(--sans)}
+h1,h2,h3,.top,.job,.m__t,.t__t,.e__co,.e__role,.g__t,.pk__t,.foot__h,.st__t,.st__head .state b,.sec__h,.cta,.tagbar button,.pk__open,.m__go,.foot__send,.st__link,.sl__who b,.dp__n,.base__co,.base__role,.base__more,.lst li,.cafe__h,.cafe__btn{font-family:var(--sans)}
 .top__r a[aria-current=page]{color:var(--ink);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:8px;text-decoration-color:var(--acc)}
 @media (max-width:519px){.top .brand span{display:none}.top__r{gap:var(--s4)}}
 
@@ -575,3 +575,20 @@ h1,h2,h3,.top,.job,.m__t,.t__t,.e__co,.e__role,.g__t,.pk__t,.foot__h,.st__t,.st_
 /* botões: o rótulo nunca quebra; no celular, onde não cabem lado a lado, cada um ocupa a linha */
 .cta{white-space:nowrap}
 @media (max-width:519px){.sv .hero__cta,.foot .hero__cta{flex-wrap:wrap}.sv .hero__cta .cta,.foot .hero__cta .cta{flex:1 1 100%}}
+
+
+/* café: clique simbólico, sem pagamento */
+.cafe{padding:var(--s8) var(--edge-r) var(--s7) var(--edge);border-top:1px solid var(--line)}
+.cafe__card{max-width:36rem;padding:var(--s5);border-radius:var(--r3);background:var(--card);box-shadow:0 0 0 1px var(--line);display:grid;gap:var(--s3)}
+.cafe__h{font-size:22px;line-height:28px;font-weight:800;letter-spacing:-.02em}
+.cafe__count{font-size:16px;line-height:24px;color:var(--mut)}
+.cafe__count strong{font:800 28px/32px var(--sans);letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums;margin-right:var(--s2)}
+.cafe__btn{justify-self:start;min-height:48px;padding:0 var(--s5);border-radius:var(--pill);border:1px solid var(--line2);background:transparent;font:800 16px var(--sans);color:var(--ink);cursor:pointer;transition:background-color .15s,border-color .15s,color .15s,transform .15s}
+.cafe__btn:hover:not(:disabled){border-color:var(--acc);color:var(--acc)}
+.cafe__btn:active:not(:disabled){transform:scale(.98)}
+.cafe__btn:disabled,.cafe--done .cafe__btn{cursor:default;color:var(--mut);border-color:var(--line);background:rgba(var(--ink-rgb),.04)}
+.cafe__note{font-size:14px;line-height:20px;color:var(--mut);max-width:40ch}
+@media (min-width:1024px){
+  .cafe{padding-top:var(--s9);padding-bottom:var(--s8)}
+  .cafe__card{padding:var(--s6)}
+}

@@ -2,6 +2,7 @@ import './style.css';
 import { mark } from './brand.js';
 import { topbar, agendar } from './shell.js';
 import { EMAIL, LINKEDIN, AGENDAR } from './config.js';
+import { cafeHtml, initCafe } from './cafe.js';
 
 document.head.insertAdjacentHTML('beforeend', `<link rel="icon" href="data:image/svg+xml,${encodeURIComponent(mark({ size: 48 }).replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"'))}">`);
 
@@ -67,6 +68,7 @@ ${topbar('servicos', '../')}
     <div><h2 class="sec__h">Combinados desde o início</h2><ul class="lst lst--b">${COMBINADOS.map((x) => `<li>${x}</li>`).join('')}</ul></div>
   </section>
 </main>
+${cafeHtml()}
 <footer class="foot sv-foot" id="contato">
   <h2 class="foot__h">Conte como o seu time trabalha hoje</h2>
   <p class="sv-foot__p">Na primeira conversa eu escuto. Escopo e formato saem dela.</p>
@@ -74,3 +76,5 @@ ${topbar('servicos', '../')}
   <p class="foot__links"><a href="mailto:${EMAIL}">${EMAIL}</a><a href="${AGENDAR.ia}" target="_blank" rel="noopener">WhatsApp</a><a href="${LINKEDIN}" target="_blank" rel="noopener">LinkedIn</a><span>Caxias do Sul, RS</span></p>
 </footer>`;
 document.body.classList.add('ready');
+
+initCafe();

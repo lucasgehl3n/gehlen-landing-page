@@ -4,6 +4,7 @@ import * as Z from './teasers.js';
 import * as V from './visuals.js';
 import { topbar, agendar, depoimentos } from './shell.js';
 import { AGENDAR, LINKEDIN, MOSTRAR_DEPOIMENTOS, DEPOIMENTOS } from './config.js';
+import { cafeHtml, initCafe } from './cafe.js';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = (s, el = document) => el.querySelector(s);
@@ -155,6 +156,7 @@ ${topbar('cv', './')}
   <aside class="peek" aria-live="polite"><div class="peek__in"></div></aside>
 </main>
 <div class="dp-slot">${MOSTRAR_DEPOIMENTOS ? depoimentos(DEPOIMENTOS) : ''}</div>
+${cafeHtml()}
 <footer class="foot" id="contato">
   <h2 class="foot__h">Fale comigo</h2>
   <p class="foot__p">Se você quer IA trabalhando junto com o seu time, ou procura um Tech Lead que entre nas decisões de produto, me chama. A primeira conversa é para eu entender o seu contexto.</p>
@@ -290,5 +292,5 @@ ${topbar('cv', './')}
   const align = () => { const ANC = { c: '.c__k', m: '.m__git', tag: '.t__ref', era: '.e__p', edu: '.m__k' }; let worst = 0, at = null; G.forEach((r) => { const n = nodes.querySelector(`[data-row="${r.i}"] .n-dot`).getBoundingClientRect(), a = list.querySelector(`[data-row="${r.i}"] ${ANC[r.kind]}`).getBoundingClientRect(); const d = Math.abs((n.top + n.height / 2) - (a.top + a.height / 2)); if (d > worst) { worst = d; at = r.i; } }); return { worst: Math.round(worst * 10) / 10, at }; };
   window.__depoimentos = (lista) => { $('.dp-slot').innerHTML = depoimentos(lista); layout(); };
   window.__home = { show, open: (id) => openSet(id, 0), layout, setTag, align, rowY: (i) => gTop + ys[i], rows: ROWS };
-  return { start() { layout(); document.body.classList.add('ready'); if (wide()) showPeek(G[0]); } };
+  return { start() { layout(); initCafe(); document.body.classList.add('ready'); if (wide()) showPeek(G[0]); } };
 }

@@ -125,6 +125,13 @@ for (const [vn, opt] of Object.entries(vps)) {
   // rodapé
   await p.evaluate(() => document.querySelector('#contato').scrollIntoView({ behavior: 'instant' })); await p.waitForTimeout(400);
   ok.push(['rodapé com agendar no WhatsApp e e-mail', await p.evaluate(() => !!document.querySelector('.foot [data-agendar]') && document.querySelector('.foot__send').href.includes('subject='))]);
+  ok.push(['café: botão, contador e aviso de que é grátis', await p.evaluate(() => {
+    const s = document.querySelector('#cafe');
+    if (!s) return false;
+    const btn = s.querySelector('[data-cafe-offer]');
+    const note = (s.querySelector('.cafe__note')?.textContent || '');
+    return !!btn && /Me ofereça um café/i.test(btn.textContent) && /não custa nada/i.test(note) && !!s.querySelector('[data-cafe-count]');
+  })]);
   await p.evaluate(() => scrollTo({ top: document.body.scrollHeight, behavior: 'instant' })); await p.waitForTimeout(300);
   await shot('5-rodape');
   // tema único escuro + contraste AA

@@ -41,6 +41,10 @@ O teste gera o build e roda o Playwright em 390x844, 768x1024, 1440x900 e 1920x1
 - `/`: currículo (grafo, Como eu trabalho, cases com contexto, gargalo e impacto).
 - `/servicos/`: consultoria de implantação de IA em times.
 
+## Café
+
+No rodapé há o botão **Me ofereça um café**: um clique por pessoa, contador público permanente. É só um clique, não custa nada. A API fica em `api/cafe.js` (Vercel Function) e a persistência no Blob store `lp-gehlen-cafe` (Hobby free). Variáveis: `BLOB_READ_WRITE_TOKEN`, `CAFE_IP_SALT` (ver `.env.example`). Local: `npm run build && node cafe-server.mjs`.
+
 ## Pendências
 
 - Depoimentos autorizados.
