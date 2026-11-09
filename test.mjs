@@ -140,7 +140,7 @@ const FAKE = [
 const CUT = () => { const out = [];
   for (const e of document.querySelectorAll('body *')) { if (e.children.length || !e.textContent.trim() || e.classList.contains('sr') || e.closest('[hidden]')) continue; const cs = getComputedStyle(e); if (cs.display !== 'none' && (cs.overflow.includes('hidden') || cs.textOverflow === 'ellipsis') && e.clientWidth && e.scrollWidth > e.clientWidth + 1) out.push('cortado: ' + e.textContent.slice(0, 40)); }
   // rótulos e textos que se cruzam dentro das seções novas
-  const els = [...document.querySelectorAll('.how h2,.how h3,.how p,.how code,.cgi__k,.cgi__v,.dp blockquote,.dp__n,.dp__r,.dp__in,.sv h1,.sv h2,.sv h3,.sv p,.sv li,.cta')].filter((e) => e.getClientRects().length);
+  const els = [...document.querySelectorAll('.flow b,.flow em,.flow figcaption,.how h2,.how h3,.how p,.how code,.cgi__k,.cgi__v,.dp blockquote,.dp__n,.dp__r,.dp__in,.sv h1,.sv h2,.sv h3,.sv p,.sv li,.cta')].filter((e) => e.getClientRects().length);
   const bx = els.map((e) => e.getBoundingClientRect());
   for (let i = 0; i < els.length; i++) for (let j = i + 1; j < els.length; j++) { if (els[i].contains(els[j]) || els[j].contains(els[i])) continue; const a = bx[i], c = bx[j]; if (a.left < c.right - 1 && c.left < a.right - 1 && a.top < c.bottom - 1 && c.top < a.bottom - 1) out.push('sobreposto: ' + els[i].textContent.slice(0, 24) + ' x ' + els[j].textContent.slice(0, 24)); }
   return out; };
@@ -183,7 +183,7 @@ for (const [vn, opt] of Object.entries(vps)) {
   if (pr) await secShot(p, '.dp', S('depoimentos-exemplo'));
   // serviços
   await p.goto(url + 'servicos/', { waitUntil: 'networkidle' }); await p.waitForTimeout(900);
-  ok.push(['Serviços: 6 etapas, agendar com mensagem de IA, sem preço', await p.evaluate(([wa, m]) => document.querySelectorAll('.br__i').length === 6 && [...document.querySelectorAll('[data-agendar]')].every((a) => a.href === wa + encodeURIComponent(m) && a.target === '_blank' && a.rel.includes('noopener')) && !/R\$|\bpreço\b/i.test(document.body.innerText), [WA, MSG.ia])]);
+  ok.push(['Serviços: 6 etapas, agendar com mensagem de IA, sem preço', await p.evaluate(([wa, m]) => document.querySelectorAll('.br__i').length === 6 && document.querySelectorAll('.flow__i').length === 3 && [...document.querySelectorAll('[data-agendar]')].every((a) => a.href === wa + encodeURIComponent(m) && a.target === '_blank' && a.rel.includes('noopener')) && !/R\$|\bpreço\b/i.test(document.body.innerText), [WA, MSG.ia])]);
   ok.push(['Serviços: Pilar só no bloco de experiência', await p.evaluate(() => { const c = document.body.cloneNode(true); c.querySelector('.base').remove(); return !/pilar/i.test(document.head.innerHTML + c.innerText); })]);
   ok.push(['Serviços: aba ativa e volta para o currículo', await p.evaluate(() => document.querySelector('.top__r [aria-current=page]').textContent === 'Serviços' && !!document.querySelector('.top__r a[href="../"]'))]);
   ok.push(['Serviços: sem rolagem horizontal', await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth)]);

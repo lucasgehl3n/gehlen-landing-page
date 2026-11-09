@@ -7,12 +7,12 @@ document.head.insertAdjacentHTML('beforeend', `<link rel="icon" href="data:image
 
 // Passos na ordem em que acontecem. Cada um sai do que eu já faço como Tech Lead.
 const PASSOS = [
-  ['Escuta', 'Começo com conversas individuais com quem está no dia a dia. Hoje faço 1:1 com cada pessoa do time, e é ali que aparece o que não chega à reunião.'],
+  ['Escuta', 'Converso com quem está no dia a dia, da engenharia a produto e design. Hoje faço 1:1 com cada pessoa do meu time, e é ali que aparece o que não chega à reunião.'],
   ['Diagnóstico', 'Mapeio o fluxo do ticket ao deploy: onde o trabalho espera, o que está escrito e o que só existe na cabeça de alguém. Só depois falo de ferramenta.'],
-  ['Alinhamento', 'Escrevo a proposta com contexto, alternativas, custo e como validar. O time revisa e decide comigo. Se o grupo escolher outro caminho, sigo a decisão.'],
-  ['Implantação gradual', 'Começo por um fluxo pequeno, com quem quer testar. Quando dá, a mudança entra atrás de feature flag, como faço no meu time hoje, e só cresce o que funcionou.'],
-  ['Documentação', 'O que deu certo vira guia e runbook no repositório. Escrevo para que a pessoa e o assistente de código leiam o mesmo texto.'],
-  ['Autonomia do time', 'Meu trabalho termina quando o time segue sem mim: sabe onde está cada guia, como atualizar e quando largar uma ferramenta que não ajudou.'],
+  ['Prova de conceito', 'Escolho um caso pequeno e testo a parte mais arriscada antes de alguém mudar a rotina. A PoC responde se vale investir, com o time olhando o resultado.'],
+  ['Alinhamento', 'Levo a proposta escrita: contexto, alternativas, custo e o que a PoC mostrou. Se vejo risco, defendo o lado contrário na conversa. O time decide, e eu sigo a decisão do grupo.'],
+  ['Implantação gradual', 'A mudança entra atrás de feature flag: primeiro para quem quer testar, depois para parte do time, depois para todos. Se o prazo aperta, quebro o trabalho em partes menores e ajudo quem travou a seguir.'],
+  ['Documentação e autonomia', 'O que deu certo vira guia e runbook que a pessoa e o assistente de código leem igual. Acompanho quem está aprendendo até o time seguir sem mim e saber quando largar uma ferramenta que não ajudou.'],
 ];
 const BASE = [
   ['Pilar', 'Tech Lead', 'set/2025 até hoje', 'Lidero o time de engenharia do PilarHomes. Faço 1:1 com cada pessoa, organizo tech talks sobre qualidade, arquitetura e IA no desenvolvimento, e decisão de porte vira documento revisado pelo time. Mantenho os runbooks e o guia de merge request, que também funciona como skill para assistente de código.'],
@@ -20,7 +20,7 @@ const BASE = [
 ];
 const FICA = [
   'Um retrato escrito de como o time trabalha hoje.',
-  'A proposta que o time revisou, com alternativas e custo.',
+  'O resultado da prova de conceito e a proposta que o time revisou, com alternativas e custo.',
   'Guias e runbooks no repositório, legíveis por gente e por assistente de código.',
   'Um plano em fases para expandir o que funcionou.',
 ];
@@ -36,13 +36,21 @@ ${topbar('servicos', '../')}
   <section class="sv-hero">
     <p class="hero__head"><code translate="no">git checkout servicos</code></p>
     <h1 class="sv-h1">Ajudo times de produto e engenharia a colocar IA no trabalho, uma etapa de cada vez.</h1>
-    <p class="sv-lead">Faço isso hoje como Tech Lead. Organizo tech talks sobre IA no desenvolvimento e escrevi um guia de contribuição que serve tanto para quem entra no time quanto para o assistente de código. Agora ofereço esse trabalho para outras empresas.</p>
+    <p class="sv-lead">Faço isso hoje como Tech Lead. Acompanho o que sai sobre IA no desenvolvimento, testo em provas de conceito e levo o que funciona para tech talks com o time. Também escrevi um guia de contribuição que serve tanto para quem entra no time quanto para o assistente de código. Agora ofereço esse trabalho para outras empresas.</p>
     <div class="hero__cta">${agendar('ia')}<a class="cta cta--ghost" href="mailto:${EMAIL}?subject=${encodeURIComponent('IA no meu time')}">Escrever por e-mail</a></div>
     <p class="cta__note">Agendar abre uma conversa comigo no WhatsApp.</p>
   </section>
 
   <section class="sv-sec sv-steps" id="conduzo" aria-labelledby="conduzo-h">
-    <div class="sv-side"><h2 class="sec__h" id="conduzo-h">Como eu conduzo</h2><p class="sec__p">A mudança anda como uma branch: sai da rotina do time, ganha um commit por etapa e volta num merge.</p></div>
+    <div class="sv-side"><h2 class="sec__h" id="conduzo-h">Como eu conduzo</h2><p class="sec__p">A mudança anda como uma branch: sai da rotina do time, ganha um commit por etapa e volta num merge.</p>
+      <figure class="flow" aria-labelledby="flow-cap">
+        <ol class="flow__l">
+          <li class="flow__i"><span class="flow__d" aria-hidden="true"></span><b>PoC</b><span>testa a parte mais arriscada</span></li>
+          <li class="flow__i"><span class="flow__d" aria-hidden="true"></span><b>Decisão</b><span>o time revisa a proposta</span></li>
+          <li class="flow__i flow__i--on"><span class="flow__d" aria-hidden="true"></span><b>Em fases</b><span class="flow__ph"><i style="--w:18%"></i><em>quem quer testar</em><i style="--w:52%"></i><em>parte do time</em><i style="--w:100%"></i><em>todos</em></span></li>
+        </ol>
+        <figcaption id="flow-cap">O caminho de cada mudança, da prova pequena até o time inteiro.</figcaption>
+      </figure></div>
     <div class="br">
       <p class="br__cmd"><span class="p">$</span> git checkout -b ia-no-time</p>
       <ol class="br__list">${PASSOS.map(([t, p], i) => `<li class="br__i"><span class="br__n" aria-hidden="true">${i + 1}</span><h3 class="br__t">${t}</h3><p class="br__p">${p}</p></li>`).join('')}</ol>

@@ -94,10 +94,10 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
   };
   const SUG = ['git log --tag=arquitetura', 'git show shorts-hls', 'git checkout pelos-caminhos', 'git branch', 'help'];
   const HOW = [
-    ['Entendo antes de desenhar', 'Vejo com produto e design o que é viável. As telas passam pela engenharia antes de ficarem prontas, e a tarefa chega ao time com a arquitetura desenhada.', 'refinamento técnico de cada tela'],
-    ['Decido por escrito', 'Decisão de porte vira documento que o time revisa: contexto, alternativas, custo e como validar em etapas. Já escrevi proposta que o time decidiu não seguir, e fiquei com a decisão do grupo.', 'doc de decisão revisado pelo time'],
-    ['Entrego em fases', 'Feature flags nunca saíam do papel. Pesquisei, testei e implementei. Hoje as entregas saem em fases, e o time experimenta com segurança.', 'flag: time interno, parte do público, todos'],
-    ['Deixo o caminho escrito', 'Mantenho os runbooks de infra e de produto e o guia de merge request. Quem chega encontra o processo escrito, e o mesmo guia serve de skill para o assistente de código.', 'runbooks e guia do clone ao merge'],
+    ['Traduzo o pedido antes de virar tarefa', 'Sento com produto e design enquanto a ideia ainda está no quadro. Pergunto o que muda para quem usa, aponto o que cabe no prazo e o que sai caro, e a tarefa chega ao time com a arquitetura desenhada.', 'refinamento com produto, design e engenharia'],
+    ['Testo a ideia pequena, depois proponho', 'Quando o caminho não está claro, faço uma prova de conceito com a parte mais arriscada. O que ela mostra entra numa proposta escrita, com alternativas e custo. Se vejo risco, defendo o lado contrário na conversa e sigo o que o time decidir.', 'PoC, proposta escrita, decisão do time'],
+    ['Organizo a entrega quando o prazo aperta', 'Quebro o trabalho em partes que cabem no prazo, divido as tarefas e fico perto de quem travou. O time pedia feature flags havia tempo; pesquisei, testei e implementei, e hoje cada parte liga primeiro para poucos.', 'flag: time interno, parte do público, todos'],
+    ['Acompanho quem chega e sigo estudando', 'Fico perto de quem acabou de entrar e marco conversas de retorno para cada pessoa crescer. Mantenho runbooks e o guia de merge request, e o que estudo vira tech talk para o time.', 'runbooks, guia de MR e tech talks'],
   ];
   const app = $('#app');
   app.innerHTML = `
