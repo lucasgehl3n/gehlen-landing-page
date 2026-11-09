@@ -130,3 +130,10 @@ Cada visual mostra um fato do LinkedIn ou de fonte pública:
 - Charles Jaja: cada case abre em contexto, gargalo e impacto, no cartão do merge e nos stories (Contexto, Gargalo, Decisão, Impacto).
 - Charles e Pavel: componente de depoimento com nome, cargo e LinkedIn. Desligado até haver depoimento autorizado.
 - Página `/servicos/`: o processo de consultoria desenhado como uma branch (`git checkout -b ia-no-time` até o merge), no mesmo idioma visual do grafo.
+
+## Hero v2 e IA no dia a dia do time (09/11/2026)
+
+- **Hero:** nome, frase que vende o Lucas (tech-prod com visão de negócio, IA no time), CTA "Agendar conversa" (WhatsApp) e "IA no seu time" (no celular, "Serviços"), e-mail embaixo. À direita no desktop, logo abaixo no celular, o cartão "Uma task, do Jira ao e2e": sete etapas numa linha como a do grafo, cada uma com a ferramenta pública (Jira, Figma, Slack) e quem executa (time ou agente de IA). As etapas acendem uma a uma, o trilho champanhe desce entre elas e o ciclo recomeça. O cartão diz que é simulação e não traz dado do time. Para fora da tela ou com a aba oculta, para; com movimento reduzido, aparece tudo feito, parado.
+- **IA no dia a dia do time:** seis peças que já rodam (tasks com Jira e Slack, histórias a partir do Figma, code review automático, ambientes de teste testados pela IA, e2e, sprint em conjunto). Sem número, sem nome de empresa ou de ferramenta interna.
+- **Terminal** saiu do hero e foi para a abertura do Histórico, junto do grafo que ele controla.
+- **Referências (abertas em 09/11/2026):** Linear (hero com a atividade de uma issue em que pessoas e agentes aparecem na mesma linha do tempo, cada evento com autor), Vercel e GitHub Actions (lista de etapas com estado: na fila, rodando, feito), Rauno Freiberg (apresentação curta e pessoal no primeiro contato), Brittany Chiang e Linear (grade com divisórias de 1 px na seção de IA).

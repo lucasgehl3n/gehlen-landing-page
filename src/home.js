@@ -99,29 +99,59 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     ['Organizo a entrega quando o prazo aperta', 'Quebro o trabalho em partes que cabem no prazo, divido as tarefas e fico perto de quem travou. O time pedia feature flags havia tempo; pesquisei, testei e implementei, e hoje cada parte liga primeiro para poucos.', 'flag: time interno, parte do público, todos'],
     ['Acompanho quem chega e sigo estudando', 'Fico perto de quem acabou de entrar e marco conversas de retorno para cada pessoa crescer. Mantenho runbooks e o guia de merge request, e o que estudo vira tech talk para o time.', 'runbooks, guia de MR e tech talks'],
   ];
+  const RUN = [
+    ['Task criada no Jira', 'jira', 'time'],
+    ['História escrita a partir do Figma', 'figma → jira', 'ia'],
+    ['Código na branch', 'git', 'time'],
+    ['Code review aberto sozinho', 'review', 'ia'],
+    ['Ambiente de teste no ar, testado pela IA', 'ambiente', 'ia'],
+    ['Fluxos e2e conferidos', 'e2e', 'ia'],
+    ['Ambiente liberado para o time validar', 'slack', 'time'],
+  ];
+  const IA = [
+    ['jira · slack', 'Tasks automatizadas', 'Automatizei tasks com Jira, Slack e agentes de IA, para o time gastar menos tempo com rotina de ferramenta.'],
+    ['figma → história', 'Histórias escritas a partir do Figma', 'Coordeno a escrita autônoma das histórias a partir das tasks do Figma. O time revisa e ajusta em vez de começar da página em branco.'],
+    ['code review', 'Review aberto automaticamente', 'Quando o código sobe, o code review já abre. Ninguém precisa lembrar de pedir.'],
+    ['ambiente de teste', 'Ambientes testados pela IA', 'Cada ambiente de teste sobe, passa pelos testes que a IA roda e fica disponível para o time conferir.'],
+    ['e2e', 'Fluxos de ponta a ponta', 'Fluxos e2e percorrem o caminho de quem usa o produto, junto com os ambientes de teste.'],
+    ['sprint', 'A sprint roda em conjunto', 'Coordeno o trabalho de pessoas e agentes na mesma sprint: quem pega o quê, o que a IA adianta e o que precisa de alguém.'],
+  ];
   const app = $('#app');
   app.innerHTML = `
 ${topbar('cv', './')}
-<section class="hero">
+<section class="hero" aria-labelledby="hero-h">
   <div class="hero__id">
-    <p class="hero__head"><span class="pulse"></span><code translate="no">HEAD -> main</code> · hoje</p>
-    <h1 translate="no">Lucas Gehlen</h1>
-    <p class="job">Lidero engenharia de produto com visão de negócio e ajudo empresas a colocar IA no trabalho do time, uma etapa de cada vez.</p>
-    <p class="line">Como Tech Lead, entro nas decisões de produto e de negócio: peso custo, impacto e prioridade, e desenho a arquitetura antes de a tarefa chegar ao time.</p>
-    <div class="hero__cta">${agendar('geral')}<a class="cta cta--ghost" href="servicos/">Serviços para empresas</a></div>
-    <p class="cta__note">Agendar abre uma conversa comigo no WhatsApp.</p>
-    <p class="meta">Caxias do Sul, remoto · Vue, Nuxt, Node, Python, AWS</p>
+    <p class="hero__head"><span class="pulse"></span><code translate="no">HEAD -> main</code><span>Tech Lead e consultor de IA</span></p>
+    <h1 id="hero-h" translate="no">Lucas Gehlen</h1>
+    <p class="job">Lidero engenharia de produto com visão de negócio e coloco IA para trabalhar junto com o time, da task ao teste e2e.</p>
+    <p class="line">Entro nas decisões de produto e de negócio e desenho a arquitetura. No time que lidero, agentes de IA escrevem histórias, abrem code review e testam cada ambiente de teste.</p>
+    <div class="hero__cta">${agendar('geral')}<a class="cta cta--ghost" href="servicos/"><span class="w-l">IA no seu time</span><span class="w-s">Serviços</span>${icon('right', { size: 18 })}</a></div>
+    <p class="cta__note">Agendar abre o WhatsApp. Ou <a href="mailto:${EMAIL}">${EMAIL}</a></p>
   </div>
+  <figure class="run" aria-labelledby="run-h">
+    <div class="run__bar"><code translate="no">fluxo do time</code><span class="run__live"><i aria-hidden="true"></i><span>simulação</span></span></div>
+    <div class="run__task"><span class="run__k">task</span><b id="run-h">Uma task, do Jira ao e2e</b><span class="run__sum" aria-live="off"><span class="run__n">0</span> de ${RUN.length}</span></div>
+    <ol class="run__list">${RUN.map(([t, src, who], i) => `<li class="run__i" data-i="${i}"><span class="run__node" aria-hidden="true"></span><span class="run__t">${t}</span><span class="run__m"><code translate="no">${src}</code><span class="run__who run__who--${who}">${who === 'ia' ? 'agente de IA' : 'time'}</span></span><span class="run__s" aria-hidden="true"></span></li>`).join('')}</ol>
+    <figcaption class="run__cap"><span>A IA cuida do repetitivo. O time decide o que entra.</span><code>ilustração do fluxo, sem dados do time</code></figcaption>
+  </figure>
+</section>
+<section class="ia" id="ia" aria-labelledby="ia-h">
+  <div class="ia__head"><p class="ia__k"><code translate="no">em uso hoje</code></p><h2 class="sec__h" id="ia-h">IA no dia a dia do time</h2><p class="sec__p">O que já roda no time que lidero. Cada peça tira trabalho repetitivo de alguém e deixa a decisão com as pessoas.</p></div>
+  <ol class="ia__list">${IA.map(([k, t, p]) => `<li class="ia__i"><code class="ia__c" translate="no">${k}</code><h3 class="ia__t">${t}</h3><p class="ia__p">${p}</p></li>`).join('')}</ol>
+  <div class="ia__cta"><a class="cta" href="${AGENDAR.ia}" target="_blank" rel="noopener">Quero isso no meu time</a><a class="ia__more" href="servicos/">Como funciona a consultoria ${icon('right', { size: 16 })}</a></div>
+</section>
+<section class="how" id="como-trabalho" aria-labelledby="how-h">
+  <div class="how__head"><h2 class="sec__h" id="how-h">Como eu trabalho</h2><p class="sec__p">Quatro passos que repito em todo time que lidero.</p></div>
+  <ol class="how__list">${HOW.map(([t, p, a], i) => `<li class="how__i"><span class="how__n" aria-hidden="true">${i + 1}</span><h3 class="how__t">${t}</h3><p class="how__p">${p}</p><p class="how__a"><code>${a}</code></p></li>`).join('')}</ol>
+</section>
+<section class="hist" aria-labelledby="hist-h">
+  <div class="hist__head"><h2 class="sec__h" id="hist-h">Histórico</h2><p class="sec__p">Minha carreira como um <code translate="no">git log</code>. Cada projeto é uma branch que volta num merge. Role a página ou use o terminal.</p></div>
   <div class="term" role="region" aria-label="Terminal para navegar no histórico">
     <div class="term__bar"><code translate="no">~/lucas-gehlen</code><code class="term__br">(main)</code></div>
     <div class="term__out" aria-live="polite"><p><span class="p">$</span> git log --oneline --graph</p><p class="o">${G.filter((r) => r.kind === 'm').length} merges, ${G.filter((r) => r.kind === 'era' || r.kind === 'edu' || r.kind === 'tag').length} etapas de carreira e formação. Digite <b>help</b> ou toque numa sugestão.</p></div>
     <form class="term__in" autocomplete="off"><label for="cmd" class="p">$</label><input id="cmd" name="cmd" spellcheck="false" autocapitalize="off" placeholder="git show shorts-hls" aria-label="Comando git"></form>
     <div class="term__sug">${SUG.map((s) => `<button type="button" data-cmd="${s}">${s}</button>`).join('')}</div>
   </div>
-</section>
-<section class="how" id="como-trabalho" aria-labelledby="how-h">
-  <div class="how__head"><h2 class="sec__h" id="how-h">Como eu trabalho</h2><p class="sec__p">Quatro passos que repito em todo time que lidero.</p></div>
-  <ol class="how__list">${HOW.map(([t, p, a], i) => `<li class="how__i"><span class="how__n" aria-hidden="true">${i + 1}</span><h3 class="how__t">${t}</h3><p class="how__p">${p}</p><p class="how__a"><code>${a}</code></p></li>`).join('')}</ol>
 </section>
 <div class="tagbar" role="group" aria-label="Filtrar commits por tag"><code translate="no">--tag</code>${FILTERS.map((f, i) => `<button type="button" data-f="${f}" aria-pressed="${!i}">${f}</button>`).join('')}</div>
 <main class="stage">
@@ -144,6 +174,20 @@ ${topbar('cv', './')}
 <div class="scrub" aria-label="Linha do tempo" role="group"><span class="scrub__y">hoje</span><div class="scrub__t" role="slider" tabindex="0" aria-label="Ir para um ano" aria-valuemin="2015" aria-valuemax="2026" aria-valuenow="2026"><i class="scrub__th"></i></div></div>
 <div class="sheet" hidden><div class="sheet__in" role="dialog" aria-modal="false" aria-label="Prévia do commit"><span class="sheet__grab" aria-hidden="true"></span><button type="button" class="sheet__x" data-sheet-close aria-label="Fechar prévia">${icon('close', { size: 20 })}</button><div class="sheet__c"></div></div></div>
 <div class="st" id="st" role="dialog" aria-modal="true" aria-label="Stories" hidden></div>`;
+
+
+  /* ---------- fluxo do hero: uma task passa pelas etapas; para fora da tela e com movimento reduzido ---------- */
+  (() => {
+    const run = $('.run'), items = [...run.querySelectorAll('.run__i')], num = $('.run__n', run);
+    const paint = (k) => { items.forEach((li, i) => { li.dataset.s = i < k ? 'ok' : i === k ? 'go' : 'wait'; $('.run__s', li).textContent = i < k ? 'feito' : i === k ? 'rodando' : 'na fila'; }); num.textContent = Math.min(k, items.length); run.classList.toggle('run--done', k >= items.length); };
+    if (reduce) { paint(items.length); return; }
+    let k = 0, t = 0, on = false;
+    const tick = () => { k = k > items.length ? 0 : k + 1; paint(k); t = setTimeout(tick, k === 0 ? 700 : k >= items.length ? 3200 : 1500); };
+    paint(0);
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting && !on) { on = true; t = setTimeout(tick, 600); } else if (!e.isIntersecting && on) { on = false; clearTimeout(t); } });
+    io.observe(run);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { clearTimeout(t); on = false; } else { io.unobserve(run); io.observe(run); } });
+  })();
 
   /* ---------- tema ---------- */
 
