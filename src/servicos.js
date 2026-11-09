@@ -10,7 +10,7 @@ const PASSOS = [
   ['Escuta', 'Converso com quem está no dia a dia, da engenharia a produto e design. Hoje faço 1:1 com cada pessoa do meu time, e é ali que aparece o que não chega à reunião.'],
   ['Diagnóstico', 'Mapeio o fluxo do ticket ao deploy: onde o trabalho espera, o que está escrito e o que só existe na cabeça de alguém. Só depois falo de ferramenta.'],
   ['Prova de conceito', 'Escolho um caso pequeno e testo a parte mais arriscada antes de alguém mudar a rotina. A PoC responde se vale investir, com o time olhando o resultado.'],
-  ['Alinhamento', 'Levo a proposta escrita: contexto, alternativas, custo e o que a PoC mostrou. Se vejo risco, defendo o lado contrário na conversa. O time decide, e eu sigo a decisão do grupo.'],
+  ['Decisão', 'Levo a proposta escrita: contexto, alternativas, custo, impacto e o que a PoC mostrou. Entro na conversa com visão de negócio. Se vejo risco, defendo o lado contrário. O time decide, e eu sigo a decisão do grupo.'],
   ['Implantação gradual', 'A mudança entra atrás de feature flag: primeiro para quem quer testar, depois para parte do time, depois para todos. Se o prazo aperta, quebro o trabalho em partes menores e ajudo quem travou a seguir.'],
   ['Documentação e autonomia', 'O que deu certo vira guia e runbook que a pessoa e o assistente de código leem igual. Acompanho quem está aprendendo até o time seguir sem mim e saber quando largar uma ferramenta que não ajudou.'],
 ];

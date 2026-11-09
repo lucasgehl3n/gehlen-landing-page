@@ -47,7 +47,7 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     ...commits('shorts', [1, 0]),
     merge('mapa'), ...commits('mapa', [2, 1, 0]),
     merge('cidade'), ...commits('cidade', [2, 1, 0]),
-    { kind: 'era', lane: 0, set: 'trajetoria', s: 5, br: 'main', co: 'Pilar', role: 'Engenheiro de software sênior', date: 'nov/2024', span: [2024.83, 2025.67], y: 2024.83, period: 'nov/2024 a set/2025', txt: 'Entrei no lançamento do PilarHomes e trabalhei do front ao back. Virei o ponto focal com produto e design.', stack: ['Nuxt', 'Node', 'Python', 'AWS'], tags: ['Carreira'] },
+    { kind: 'era', lane: 0, set: 'trajetoria', s: 5, br: 'main', co: 'Pilar', role: 'Engenheiro de software sênior', date: 'nov/2024', span: [2024.83, 2025.67], y: 2024.83, period: 'nov/2024 a set/2025', txt: 'Entrei no lançamento do PilarHomes e trabalhei do front ao back. Participei das decisões de produto e de negócio com o time, além da arquitetura.', stack: ['Nuxt', 'Node', 'Python', 'AWS'], tags: ['Carreira'] },
     { kind: 'blk', id: 'shortlog' },
     { kind: 'year', label: '2019 a 2024', sub: 'trabalho e faculdade em paralelo' },
     { kind: 'm', lane: 0, set: 'trajetoria', s: 2, br: 'formacao', merge: 'formacao', title: 'Bacharel em Ciência da Computação', date: '2023', y: 2023.9, span: [2019, 2023.95], txt: 'Bacharelado na UCS, em Caxias do Sul. A formação entra na main.', tags: ['Formação'], edu: 1 },
@@ -94,7 +94,7 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
   };
   const SUG = ['git log --tag=arquitetura', 'git show shorts-hls', 'git checkout pelos-caminhos', 'git branch', 'help'];
   const HOW = [
-    ['Traduzo o pedido antes de virar tarefa', 'Sento com produto e design enquanto a ideia ainda está no quadro. Pergunto o que muda para quem usa, aponto o que cabe no prazo e o que sai caro, e a tarefa chega ao time com a arquitetura desenhada.', 'refinamento com produto, design e engenharia'],
+    ['Entro na decisão antes de virar tarefa', 'Sento com produto e design enquanto a ideia ainda está no quadro. Peso o que muda para quem usa, o custo e a prioridade frente ao resto do roadmap, e a tarefa chega ao time com a arquitetura desenhada.', 'custo, impacto e prioridade'],
     ['Testo a ideia pequena, depois proponho', 'Quando o caminho não está claro, faço uma prova de conceito com a parte mais arriscada. O que ela mostra entra numa proposta escrita, com alternativas e custo. Se vejo risco, defendo o lado contrário na conversa e sigo o que o time decidir.', 'PoC, proposta escrita, decisão do time'],
     ['Organizo a entrega quando o prazo aperta', 'Quebro o trabalho em partes que cabem no prazo, divido as tarefas e fico perto de quem travou. O time pedia feature flags havia tempo; pesquisei, testei e implementei, e hoje cada parte liga primeiro para poucos.', 'flag: time interno, parte do público, todos'],
     ['Acompanho quem chega e sigo estudando', 'Fico perto de quem acabou de entrar e marco conversas de retorno para cada pessoa crescer. Mantenho runbooks e o guia de merge request, e o que estudo vira tech talk para o time.', 'runbooks, guia de MR e tech talks'],
@@ -106,8 +106,8 @@ ${topbar('cv', './')}
   <div class="hero__id">
     <p class="hero__head"><span class="pulse"></span><code translate="no">HEAD -> main</code> · hoje</p>
     <h1 translate="no">Lucas Gehlen</h1>
-    <p class="job">Lidero times de engenharia de produto e ajudo empresas a colocar IA no trabalho do time, uma etapa de cada vez.</p>
-    <p class="line">Como Tech Lead, vejo com produto e design o que é viável e desenho a arquitetura antes de a tarefa chegar ao time.</p>
+    <p class="job">Lidero engenharia de produto com visão de negócio e ajudo empresas a colocar IA no trabalho do time, uma etapa de cada vez.</p>
+    <p class="line">Como Tech Lead, entro nas decisões de produto e de negócio: peso custo, impacto e prioridade, e desenho a arquitetura antes de a tarefa chegar ao time.</p>
     <div class="hero__cta">${agendar('geral')}<a class="cta cta--ghost" href="servicos/">Serviços para empresas</a></div>
     <p class="cta__note">Agendar abre uma conversa comigo no WhatsApp.</p>
     <p class="meta">Caxias do Sul, remoto · Vue, Nuxt, Node, Python, AWS</p>

@@ -55,7 +55,7 @@ const SETS = [
     { id: 'ucs', icon: 'cap', k: '2019 a 2023', t: 'Ciência da Computação na UCS', p: 'Bacharelado na Universidade de Caxias do Sul, em paralelo com o trabalho. O TCC foi o Pelos Caminhos.', art: () => A.career('ucs'), link: ['pelos', 'Abrir o Pelos Caminhos'] },
     { id: 'conecta', icon: 'code', k: 'mar/2020 a jul/2022', t: 'Full stack na Conecta Softwares', p: 'Em Caxias do Sul, trabalhei no core de um ERP em .NET, nos módulos fiscais: NF-e, NFC-e, entradas e pedidos. No front, Vue.', art: () => A.career('conecta') },
     { id: 'compass', icon: 'code', k: 'ago/2022 a nov/2024', t: 'Front-end na Compass.uol', p: 'Alocado na Vivo, no portal B2B de empresas, feito em micro frontends com Vue e TypeScript. Implantei testes de mutação com Stryker e atuei em SRE com Kibana.', art: () => A.career('compass') },
-    { id: 'pilar', icon: 'tower', k: 'nov/2024 até hoje', t: 'Pilar: de sênior a Tech Lead', p: `Entrei como engenheiro sênior no lançamento do PilarHomes e virei o ponto focal com produto e design. Desde setembro de 2025 lidero o time. Segundo a VEJA, o portal já responde por uma em cada cinco vendas da Pilar. ${src(VEJA, 'VEJA, out/2026')}`, art: () => A.career('pilar') },
+    { id: 'pilar', icon: 'tower', k: 'nov/2024 até hoje', t: 'Pilar: de sênior a Tech Lead', p: `Entrei como engenheiro sênior no lançamento do PilarHomes e participei das decisões de produto e de negócio, além da arquitetura. Desde setembro de 2025 lidero o time. Segundo a VEJA, o portal já responde por uma em cada cinco vendas da Pilar. ${src(VEJA, 'VEJA, out/2026')}`, art: () => A.career('pilar') },
   ] },
 ];
 const setOf = (id) => SETS.find((s) => s.id === id);
