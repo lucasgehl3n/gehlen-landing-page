@@ -34,7 +34,7 @@ document.getElementById('app').innerHTML = `
 ${topbar('servicos', '../')}
 <main class="sv">
   <section class="sv-hero">
-    <p class="hero__head"><code translate="no">git checkout servicos</code></p>
+    <p class="hero__head">Consultoria de IA para times de produto e engenharia</p>
     <h1 class="sv-h1">Ajudo times de produto e engenharia a colocar IA no trabalho, uma etapa de cada vez.</h1>
     <p class="sv-lead">Faço isso hoje como Tech Lead. Acompanho o que sai sobre IA no desenvolvimento, testo em provas de conceito e levo o que funciona para tech talks com o time. Também escrevi um guia de contribuição que serve tanto para quem entra no time quanto para o assistente de código. Agora ofereço esse trabalho para outras empresas.</p>
     <div class="hero__cta">${agendar('ia')}<a class="cta cta--ghost" href="mailto:${EMAIL}?subject=${encodeURIComponent('IA no meu time')}">Escrever por e-mail</a></div>
@@ -42,25 +42,23 @@ ${topbar('servicos', '../')}
   </section>
 
   <section class="sv-sec sv-steps" id="conduzo" aria-labelledby="conduzo-h">
-    <div class="sv-side"><h2 class="sec__h" id="conduzo-h">Como eu conduzo</h2><p class="sec__p">A mudança anda como uma branch: sai da rotina do time, ganha um commit por etapa e volta num merge.</p>
+    <div class="sv-side"><h2 class="sec__h" id="conduzo-h">Como eu conduzo</h2><p class="sec__p">Seis etapas, na ordem em que acontecem. É o mesmo caminho que sigo com o time que lidero.</p>
       <figure class="flow" aria-labelledby="flow-cap">
         <ol class="flow__l">
-          <li class="flow__i"><span class="flow__d" aria-hidden="true"></span><b>PoC</b><span>testa a parte mais arriscada</span></li>
-          <li class="flow__i"><span class="flow__d" aria-hidden="true"></span><b>Decisão</b><span>o time revisa a proposta</span></li>
-          <li class="flow__i flow__i--on"><span class="flow__d" aria-hidden="true"></span><b>Em fases</b><span class="flow__ph"><i style="--w:18%"></i><em>quem quer testar</em><i style="--w:52%"></i><em>parte do time</em><i style="--w:100%"></i><em>todos</em></span></li>
+          <li class="flow__i"><b>PoC</b><span>Testa a parte mais arriscada.</span></li>
+          <li class="flow__i"><b>Decisão</b><span>O time revisa a proposta.</span></li>
+          <li class="flow__i"><b>Em fases</b><span>Liga primeiro para poucos.</span><span class="flow__ph"><i style="--w:18%"></i><em>quem quer testar</em><i style="--w:52%"></i><em>parte do time</em><i style="--w:100%"></i><em>todos</em></span></li>
         </ol>
         <figcaption id="flow-cap">O caminho de cada mudança, da prova pequena até o time inteiro.</figcaption>
       </figure></div>
     <div class="br">
-      <p class="br__cmd"><span class="p">$</span> git checkout -b ia-no-time</p>
       <ol class="br__list">${PASSOS.map(([t, p], i) => `<li class="br__i"><span class="br__n" aria-hidden="true">${i + 1}</span><h3 class="br__t">${t}</h3><p class="br__p">${p}</p></li>`).join('')}</ol>
-      <p class="br__cmd br__cmd--end"><span class="p">$</span> git merge ia-no-time <span class="br__h">volta para a rotina do time</span></p>
     </div>
   </section>
 
   <section class="sv-sec" aria-labelledby="base-h">
     <div class="sv-side"><h2 class="sec__h" id="base-h">De onde vem esse jeito de trabalhar</h2><p class="sec__p">Do que faço como Tech Lead e de quando levei uma prática nova para um time que já existia.</p></div>
-    <div class="base">${BASE.map(([co, role, per, txt]) => `<article class="base__i"><p class="base__p"><code>${per}</code></p><h3 class="base__co">${co}</h3><p class="base__role">${role}</p><p class="base__txt">${txt}</p></article>`).join('')}
+    <div class="base">${BASE.map(([co, role, per, txt]) => `<article class="base__i"><p class="base__p">${per}</p><h3 class="base__co">${co}</h3><p class="base__role">${role}</p><p class="base__txt">${txt}</p></article>`).join('')}
       <a class="base__more" href="../#historico">Ver o currículo completo</a></div>
   </section>
 

@@ -82,7 +82,7 @@ function render() {
     <div class="st__bars" aria-hidden="true">${cur.stories.map((_, i) => `<i><b style="transform:scaleX(${i < si ? 1 : 0})"></b></i>`).join('')}</div>
     <div class="st__head">${mark({ size: 26, ink: C.neblina, ping: C.sinal })}<span class="state"><b>${cur.titulo}</b><span>${cur.tipo}</span></span><span class="ctrl">
       <button type="button" data-pause aria-label="${paused ? 'Continuar' : 'Pausar'}">${icon(paused ? 'play' : 'pause', { size: 20 })}</button>
-      <button type="button" data-close aria-label="Fechar e voltar ao log">${icon('close', { size: 20 })}</button></span></div>
+      <button type="button" data-close aria-label="Fechar">${icon('close', { size: 20 })}</button></span></div>
     <button class="zone prev" type="button" data-nav="ps" aria-label="Story anterior"></button>
     <button class="zone next" type="button" data-nav="ns" aria-label="Próximo story"></button>
     <div class="st__body" aria-live="polite">

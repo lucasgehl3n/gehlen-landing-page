@@ -1,4 +1,4 @@
-// Teasers vivos da home: versões pequenas dos visuais dos stories. Cores vêm das variáveis do tema (currentColor / classes).
+// Teasers da home: versões pequenas dos visuais dos stories. Cores vêm das variáveis do tema (currentColor / classes).
 const sv = (vb, body, label) => `<svg class="tz" viewBox="${vb}" ${label ? `role="img" aria-label="${label}"` : 'aria-hidden="true"'}>${body}</svg>`;
 const mono = (x, y, t, cls = 'tz-m', a = 'start') => `<text class="${cls}" x="${x}" y="${y}" text-anchor="${a}">${t}</text>`;
 
@@ -23,11 +23,11 @@ export function cities() {
   for (let lo = -50; lo <= -45; lo++) b += `<line class="tz-grid" x1="${px(0, lo)[0]}" x2="${px(0, lo)[0]}" y1="0" y2="130"/>`;
   for (let la = -22; la >= -26; la--) b += `<line class="tz-grid" x1="0" x2="200" y1="${px(la, 0)[1]}" y2="${px(la, 0)[1]}"/>`;
   const [x1, y1] = px(-23.55, -46.63), [x2, y2] = px(-25.43, -49.27);
-  b += `<path class="tz-route tz-acc-s" d="M${x1} ${y1}L${x2} ${y2}"/><circle class="tz-acc-f" cx="${x1}" cy="${y1}" r="4"/><circle class="tz-acc-f" cx="${x2}" cy="${y2}" r="4"/><circle class="tz-ring tz-acc-s" cx="${x1}" cy="${y1}" r="10"/><circle class="tz-ring tz-acc-s" style="animation-delay:1s" cx="${x2}" cy="${y2}" r="10"/>${mono(x1 + 8, y1 - 8, 'São Paulo', 'tz-m tz-ink-t')}${mono(x2 + 14, y2 + 4, 'Curitiba', 'tz-m tz-ink-t')}`;
+  b += `<path class="tz-route tz-acc-s" d="M${x1} ${y1}L${x2} ${y2}"/><circle class="tz-acc-f" cx="${x1}" cy="${y1}" r="4"/><circle class="tz-acc-f" cx="${x2}" cy="${y2}" r="4"/>${mono(x1 + 8, y1 - 8, 'São Paulo', 'tz-m tz-ink-t')}${mono(x2 + 14, y2 + 4, 'Curitiba', 'tz-m tz-ink-t')}`;
   return sv('0 0 200 120', b, 'São Paulo e Curitiba no mapa');
 }
 export function alert() {
-  return `<div class="tz tz-alert" aria-hidden="true"><span class="tz-q">São Paulo · Apartamento · 3+ quartos</span><span class="tz-note"><b><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg> Radar</b>Entrou um imóvel que combina com a sua busca.</span><span class="tz-cap">simulação</span></div>`;
+  return `<div class="tz tz-alert" aria-hidden="true"><span class="tz-q">São Paulo · Apartamento · 3+ quartos</span><span class="tz-note"><b><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg> Radar</b>Entrou um imóvel que combina com a sua busca.</span><span class="tz-cap">Exemplo do aviso que a pessoa recebe</span></div>`;
 }
 export function checklist() {
   const it = ['Hooks rodaram', 'Diff sem segredo', 'Descrição com o porquê', 'Preview validado'];

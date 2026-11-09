@@ -11,7 +11,6 @@ const head = (p) => p.textContent('.st__head .state'); const k = (p) => p.textCo
 const rowSel = (set, kind) => `.r--${kind} button[data-row]`;
 const rowIdx = (p, pred) => p.evaluate((pred) => window.__home.rows.findIndex(new Function('r', `return ${pred}`)), pred);
 const toRow = (p, i, f = 0.45) => p.evaluate(([i, f]) => scrollTo({ top: window.__home.rowY(i) - innerHeight * f, behavior: 'instant' }), [i, f]);
-async function typeCmd(p, c) { await p.click('#cmd'); await p.keyboard.type(c, { delay: 25 }); await p.keyboard.press('Enter'); await p.waitForTimeout(700); }
 const AA = () => {
   const rgb = (s) => { const m = s.match(/[\d.]+/g).map(Number); return { r: m[0], g: m[1], b: m[2], a: m[3] ?? 1 }; };
   const lum = ({ r, g, b }) => [r, g, b].map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }).reduce((s, v, i) => s + v * [0.2126, 0.7152, 0.0722][i], 0);
@@ -57,7 +56,10 @@ for (const [vn, opt] of Object.entries(vps)) {
   await shotEl('v1-remote', '.blk--remote'); await shotEl('v2-shortlog', '.blk--sl'); await shotEl('v3-compass', '.r--era-v');
   await shotEl('v4-conecta', '.r--era-v:nth-of-type(n) ~ .r--era-v'); await shotEl('v5-formacao', '.r--grad'); await shotEl('v6-stack', '.blk--sm');
   await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(500);
-  ok.push(['grafo com branches, nós e HEAD pulsando', await p.evaluate(() => document.querySelectorAll('.graph .node').length > 30 && document.querySelectorAll('.graph .edge').length >= 8 && !!document.querySelector('.n-pulse'))]);
+  ok.push(['grafo com branches e nós, sem ponto pulsando', await p.evaluate(() => document.querySelectorAll('.graph .node').length > 30 && document.querySelectorAll('.graph .edge').length >= 8 && !document.querySelector('.n-pulse, .pulse, .penhead, .run__live'))]);
+  ok.push(['nenhuma animação em loop na home', await p.evaluate(() => ![...document.querySelectorAll('*')].some((e) => getComputedStyle(e).animationIterationCount.includes('infinite')))]);
+  ok.push(['sem fantasia de terminal: nada de HEAD, hash, $, git log, simulação ou status de fila', await p.evaluate(() => { const t = document.body.innerText; return !/HEAD ->|\$ git|git log|Merge branch|simulação|na fila|\b[0-9a-f]{7}\b/i.test(t) && !document.querySelector('.term, #cmd, [data-cmd], .foot__term, .ref'); })]);
+  ok.push(['hero mostra a task do Jira ao e2e como lista de 7 passos, 4 feitos por IA', await p.evaluate(() => document.querySelectorAll('.run__i').length === 7 && document.querySelectorAll('.run__i--ia').length === 4 && !document.querySelector('.run__s, .run__sum, .run__bar'))]);
   // grafo escrito no scroll
   const clip0 = await p.evaluate(() => +document.querySelector('#pen rect').getAttribute('height'));
   const mapa = await rowIdx(p, "r.merge==='mapa'"); await toRow(p, mapa); await p.waitForTimeout(900);
@@ -86,32 +88,27 @@ for (const [vn, opt] of Object.entries(vps)) {
   await drag(p, box.x + box.width * 0.5, box.y + box.height * 0.2, box.x + box.width * 0.52, box.y + box.height * 0.7); await p.waitForTimeout(600);
   ok.push(['swipe para baixo fecha', !(await open(p))]);
   if (!W) { await p.evaluate(() => document.querySelector('[data-sheet-close]')?.click()); await p.waitForTimeout(300); }
-  // terminal
+  // filtros e atalhos
+  await p.evaluate(() => document.querySelector('[data-f="Formação"]').click()); await p.waitForTimeout(500);
+  ok.push(['filtro Formação apaga o resto do histórico', await p.evaluate(() => document.querySelectorAll('.r.off').length > 15 && document.querySelector('[data-f="Formação"]').getAttribute('aria-pressed') === 'true')]);
   await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(300);
-  await typeCmd(p, 'git log --tag=formacao');
-  ok.push(['git log --tag=formacao filtra o grafo', await p.evaluate(() => document.querySelectorAll('.r.off').length > 15 && document.querySelector('[data-f="Formação"]').getAttribute('aria-pressed') === 'true')]);
-  await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(300);
-  await typeCmd(p, 'git show pelos-caminhos'); await p.waitForTimeout(500);
-  ok.push(['git show pelos-caminhos abre a prévia', W ? (await p.textContent('.peek__in')).includes('Pelos Caminhos') : await p.evaluate(() => !document.querySelector('.sheet').hidden && document.querySelector('.sheet__c').textContent.includes('Pelos Caminhos'))]);
+  await p.mouse.move(2, 2); await p.evaluate(() => window.__home.show('pelos')); await p.waitForTimeout(1000);
+  ok.push(['prévia do Pelos Caminhos abre no painel ou na folha', W ? (await p.textContent('.peek__in')).includes('Pelos Caminhos') : await p.evaluate(() => !document.querySelector('.sheet').hidden && document.querySelector('.sheet__c').textContent.includes('Pelos Caminhos'))]);
   if (!W) { await p.click('[data-sheet-close]'); await p.waitForTimeout(300); }
   await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(200);
-  await p.click('[data-cmd="git branch"]'); await p.waitForTimeout(1200);
-  ok.push(['sugestão clicável roda o comando', (await p.textContent('.term__out')).includes('segunda-cidade')]);
-  await shot('4-terminal');
-  await typeCmd(p, 'git checkout shorts-hls');
-  ok.push(['git checkout shorts-hls abre os stories', (await open(p)) && (await head(p)).includes('Shorts')]);
+  await p.evaluate(() => window.__home.open('shorts')); await p.waitForTimeout(700);
+  ok.push(['abrir Shorts mostra os stories certos', (await open(p)) && (await head(p)).includes('Shorts')]);
   await p.waitForTimeout(900); const stAA = []; for (let s = 0; s < 4; s++) { stAA.push(...await p.evaluate(AA)); await p.keyboard.press('ArrowRight'); await p.waitForTimeout(900); }
   rep[vn + 'StoriesAA'] = [...new Set(stAA)]; ok.push([`contraste AA nos stories (${rep[vn + 'StoriesAA'].length} falhas)`, rep[vn + 'StoriesAA'].length === 0]);
   await p.keyboard.press('Escape'); await p.waitForTimeout(300);
-  await typeCmd(p, 'git log');
+  await p.evaluate(() => document.querySelector('[data-f="Tudo"]').click()); await p.waitForTimeout(300);
   // scrub
   await p.evaluate(() => scrollTo({ top: window.__home.rowY(5), behavior: 'instant' })); await p.waitForTimeout(500);
   const t = await p.locator('.scrub__t').boundingBox(); await p.mouse.click(t.x + t.width * ((2020.3 - 2015) / 11), t.y + 10); await p.waitForTimeout(600);
   ok.push(['clicar em 2020 na linha do tempo leva à Conecta', /2020|2021/.test(await p.textContent('.scrub__y'))]);
   // rodapé
   await p.evaluate(() => document.querySelector('#contato').scrollIntoView({ behavior: 'instant' })); await p.waitForTimeout(400);
-  await p.fill('#msg', 'oi, Lucas. Vamos conversar?'); await p.waitForTimeout(200);
-  ok.push(['mensagem do commit atualiza o rodapé e o mailto', (await p.textContent('.foot__msg')).includes('conversar') && (await p.getAttribute('.foot__send', 'href')).includes('conversar')]);
+  ok.push(['rodapé com agendar no WhatsApp e e-mail', await p.evaluate(() => !!document.querySelector('.foot [data-agendar]') && document.querySelector('.foot__send').href.includes('subject='))]);
   await p.evaluate(() => scrollTo({ top: document.body.scrollHeight, behavior: 'instant' })); await p.waitForTimeout(300);
   await shot('5-rodape');
   // tema único escuro + contraste AA
@@ -189,8 +186,8 @@ for (const [vn, opt] of Object.entries(vps)) {
   ok.push(['Serviços: sem rolagem horizontal', await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth)]);
   ok.push(['Serviços: nada de Vitrina, Trilha, GitHub', await p.evaluate((re) => !new RegExp(re, 'i').test(document.body.innerText), PROIBIDO.source)]);
   const scut = await p.evaluate(CUT); rep[vn + 'ServicosCortes'] = scut; ok.push([`Serviços sem corte nem sobreposição (${scut.length})`, scut.length === 0]);
-  const fontes = await p.evaluate(async () => { await document.fonts.ready; return ['800 16px "Cabinet Grotesk"', '16px "Geist"', '16px "Geist Mono Variable"'].every((f) => document.fonts.check(f)) && ![...document.querySelectorAll('body *')].some((e) => /serif/.test(getComputedStyle(e).fontFamily.replace(/sans-serif/g, ''))); });
-  ok.push(['fontes Cabinet + Geist carregadas, nenhuma serifa', fontes]);
+  const fontes = await p.evaluate(async () => { await document.fonts.ready; return ['800 16px "Cabinet Grotesk"', '16px "Geist"'].every((f) => document.fonts.check(f)) && ![...document.querySelectorAll('body *')].some((e) => /serif/.test(getComputedStyle(e).fontFamily.replace(/sans-serif/g, ''))); });
+  ok.push(['fontes Cabinet + Geist carregadas, nenhuma serifa nem itálico', fontes && await p.evaluate(() => ![...document.querySelectorAll('body *')].some((e) => getComputedStyle(e).fontStyle === 'italic' && e.textContent.trim()))]);
   if (pr) { await p.screenshot({ path: S('servicos-topo') }); await p.screenshot({ path: S('servicos'), fullPage: true }); await secShot(p, '#conduzo', S('servicos-conduzo')); }
   for (const y of [0, 0.25, 0.5, 0.75, 1]) { await p.evaluate((y) => scrollTo({ top: (document.body.scrollHeight - innerHeight) * y, behavior: 'instant' }), y); await p.waitForTimeout(300); aa.push(...await p.evaluate(AA)); }
   rep[vn + 'NovasAA'] = [...new Set(aa)]; ok.push([`contraste AA nas seções novas e em Serviços (${rep[vn + 'NovasAA'].length} falhas)`, rep[vn + 'NovasAA'].length === 0]);
@@ -208,7 +205,7 @@ const c3 = await b.newContext({ viewport: { width: 390, height: 844 }, reducedMo
 p3.on('pageerror', (e) => e3.push(e.message)); p3.on('console', (m) => m.type() === 'error' && e3.push(m.text()));
 await p3.goto(url, { waitUntil: 'networkidle' }); await p3.waitForTimeout(800);
 const full = await p3.evaluate(() => +document.querySelector('#pen rect').getAttribute('height') >= document.querySelector('.rows').offsetHeight);
-await p3.evaluate(() => window.__home.run('git checkout shorts-hls')); await p3.waitForTimeout(2500);
+await p3.evaluate(() => window.__home.open('shorts')); await p3.waitForTimeout(2500);
 const autoOff = (await p3.textContent('.st__k')).includes('1 de 4');
 await p3.goto(url + 'servicos/', { waitUntil: 'networkidle' }); await p3.waitForTimeout(400);
 const pulseOff = await p3.evaluate(() => [...document.querySelectorAll('*')].every((e) => getComputedStyle(e).animationName === 'none' || parseFloat(getComputedStyle(e).animationDuration) === 0));
@@ -219,7 +216,7 @@ for (const [vn, opt] of Object.entries(vps)) {
   const ctx = await b.newContext({ ...opt, recordVideo: { dir: `/tmp/rsv-${vn}`, size: opt.viewport } }); const p = await ctx.newPage();
   const W = opt.viewport.width >= 1200;
   await p.goto(url, { waitUntil: 'networkidle' }); await p.waitForTimeout(900);
-  await p.click('[data-cmd="git show shorts-hls"]'); await p.waitForTimeout(1600);
+  await p.evaluate(() => window.__home.show('shorts')); await p.waitForTimeout(1600);
   if (!W) { await p.click('[data-sheet-close]'); await p.waitForTimeout(300); }
   await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(300);
   for (let i = 0; i < 70; i++) { await p.mouse.wheel(0, 130); await p.waitForTimeout(60); }

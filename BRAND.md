@@ -3,6 +3,8 @@
 Folha de identidade (tema, marca, tipo, ícones, grafismos, ilustrações): `brand.html` (o `npm test` gera o print em `shots/brand-sheet.png`). Código-fonte da marca: `src/brand.js`.
 
 ## Ideia
+> **Revisão de 09/11/2026 (branch `humanize`).** O Lucas pediu para tirar o que deixava o site com cara de feito por IA. Saíram: pontos pulsando, `HEAD -> main`, hashes de commit, "Merge branch", o terminal digitável, os comandos `$ git ...` nos blocos, o rodapé `git commit`, o painel falso do hero com status e contador, e as animações em loop. O grafo continua como linha do tempo, sem fantasia de git. O texto abaixo descreve a versão anterior e fica como histórico.
+
 A home é um grafo de commits no estilo `git log --graph`, e o grafo é a peça principal da página. A `main` é a carreira: Vero (abr/2019), Conecta (mar/2020), Compass (ago/2022), Pilar sênior (nov/2024) e `tag: tech-lead` (set/2025). A branch `formacao` sai do IFRS (2015), passa pela UCS, recebe o merge do TCC Pelos Caminhos e entra na main em 2023. Cada case é uma branch que nasce na main, ganha commits (desafio, o que eu fiz, o que mudou) e volta com um merge. O HEAD pulsa no merge mais recente.
 
 ### Como a home prende sem precisar abrir um story
