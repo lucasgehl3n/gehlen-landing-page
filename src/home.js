@@ -178,12 +178,14 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     const s = setOf(r.set), st = s.stories[r.s];
     const vis = TEASE[r.set] ? TEASE[r.set]() : r.span ? Z.track(r.span[0], r.span[1], r.kind === 'edu' || r.edu ? 'tz-edu-f' : 'tz-acc-f') : '';
     const brn = r.br === 'main' ? 'main' : BR[r.br];
-    const extra = r.kind === 'tag' ? `<p class="pk__src">Segundo a VEJA, o portal já responde por uma em cada cinco vendas da Pilar. <a href="${VEJA}" target="_blank" rel="noopener">VEJA, out/2026</a></p>` : '';
+    const useP = !(r.kind === 'm' && SUM[r.set]) && !r.txt;
+    const links = useP ? st.p.match(/<a [^>]*>.*?<\/a>/g) || [] : [];
+    const extra = links.length ? `<p class="pk__src">Fonte: ${links.join(', ')}</p>` : '';
     return `<p class="pk__meta"><code translate="no">commit ${r.h}</code><span>${r.date || brn}</span></p>
       <p class="pk__br"><code translate="no">${r.kind === 'm' ? `merge · ${brn}` : r.kind === 'c' ? `${brn} · ${st.k.toLowerCase()}` : brn}</code>${(r.refs || []).map((x) => `<em class="ref">${x}</em>`).join('')}</p>
       <div class="pk__vis">${vis}</div>
       <p class="pk__t">${r.kind === 'c' ? st.t : r.title || `${r.co}, ${r.role.toLowerCase()}`}</p>
-      <p class="pk__d">${r.kind === 'm' && SUM[r.set] ? SUM[r.set] : r.txt || st.p.replace(/<a [^>]*>.*?<\/a>/g, '').trim()}</p>${extra}
+      <p class="pk__d">${useP ? st.p.replace(/<a [^>]*>.*?<\/a>/g, '').trim() : r.kind === 'm' && SUM[r.set] ? SUM[r.set] : r.txt}</p>${extra}
       <p class="pk__tags">${r.tags.map((t) => `<span class="chip">${t}</span>`).join('')}</p>
       <button type="button" class="pk__open" data-open="${r.set}" data-s="${r.s}">Abrir a história ${icon('right', { size: 16 })}</button>`;
   }

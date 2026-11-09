@@ -115,7 +115,7 @@ O que adotei:
 
 Cada visual mostra um fato do LinkedIn ou de fonte pública:
 
-- `git remote -v`: mapa do Sul e Sudeste com Caxias do Sul (UCS, Vero, Conecta, trabalho remoto hoje), Farroupilha (IFRS) e as duas cidades que o PilarHomes atende. O contorno do Brasil vem do Natural Earth (domínio público), via world.geo.json.
+- `git remote -v`: mapa do Sul e Sudeste com Caxias do Sul (UCS, Vero, Conecta, trabalho remoto hoje), Farroupilha (IFRS) e as duas cidades que o PilarHomes atende. O contorno vem do Natural Earth 1:50m (domínio público), com divisas estaduais, em projeção equiretangular corrigida para a latitude (x = (lon + 56) · 24,3, y = (−22 − lat) · 27). Os pontos usam as coordenadas públicas das cidades. As linhas tracejadas até Curitiba e São Paulo são o trabalho remoto, não rotas.
 - `git shortlog`: meses por cargo, calculados a partir das datas reais no carregamento da página.
 - Stack no tempo: o que usei em cada empresa, linha por tecnologia, só com o que está no LinkedIn.
 - Compass/Vivo: portal B2B em micro frontends e um exemplo de mutante (`>` virando `>=`). É uma ilustração do conceito, sem telas nem nomes do projeto.

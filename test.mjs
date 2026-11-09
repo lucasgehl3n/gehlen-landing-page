@@ -47,6 +47,13 @@ for (const [vn, opt] of Object.entries(vps)) {
   ok.push([`nós alinhados com a linha do cartão (pior caso ${al.worst}px)`, al.worst <= 2]);
   ok.push(['sem rolagem horizontal', await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth)]);
   ok.push(['visuais novos: mapa, shortlog, stack no tempo, Compass, Conecta, formação', await p.evaluate(() => !!document.querySelector('.blk--remote .vz-map') && document.querySelectorAll('.sl__r').length === 5 && document.querySelectorAll('.sm__r').length === 12 && document.querySelectorAll('.r--era-v .e__vis svg').length >= 3 && !!document.querySelector('.g__vis svg'))]);
+  const cut = await p.evaluate(() => { const out = [];
+    for (const s of document.querySelectorAll('main svg[viewBox]:not(.graph)')) { const vb = s.viewBox.baseVal; const ts = [...s.querySelectorAll('text')], bx = ts.map((x) => x.getBBox());
+      ts.forEach((x, i) => { const q = bx[i]; if (q.width && (q.x < vb.x - .5 || q.y < vb.y - .5 || q.x + q.width > vb.x + vb.width + .5 || q.y + q.height > vb.y + vb.height + .5)) out.push('fora do svg: ' + x.textContent); });
+      for (let i = 0; i < ts.length; i++) for (let j = i + 1; j < ts.length; j++) { const a = bx[i], c = bx[j]; if (a.width && c.width && a.x < c.x + c.width - .5 && c.x < a.x + a.width - .5 && a.y < c.y + c.height - .5 && c.y < a.y + a.height - .5) out.push('sobreposto: ' + ts[i].textContent + ' x ' + ts[j].textContent); } }
+    for (const e of document.querySelectorAll('main *')) { if (e.children.length || !e.textContent.trim() || e.classList.contains('sr')) continue; const cs = getComputedStyle(e); if (cs.display !== 'none' && (cs.overflow.includes('hidden') || cs.textOverflow === 'ellipsis') && e.clientWidth && e.scrollWidth > e.clientWidth + 1) out.push('cortado: ' + e.textContent.slice(0, 40)); }
+    return out; });
+  rep[vn + 'Cortes'] = cut; ok.push([`nenhum rótulo cortado ou sobreposto (${cut.length})`, cut.length === 0]);
   await shotEl('v1-remote', '.blk--remote'); await shotEl('v2-shortlog', '.blk--sl'); await shotEl('v3-compass', '.r--era-v');
   await shotEl('v4-conecta', '.r--era-v:nth-of-type(n) ~ .r--era-v'); await shotEl('v5-formacao', '.r--grad'); await shotEl('v6-stack', '.blk--sm');
   await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(500);

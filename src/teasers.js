@@ -23,7 +23,7 @@ export function cities() {
   for (let lo = -50; lo <= -45; lo++) b += `<line class="tz-grid" x1="${px(0, lo)[0]}" x2="${px(0, lo)[0]}" y1="0" y2="130"/>`;
   for (let la = -22; la >= -26; la--) b += `<line class="tz-grid" x1="0" x2="200" y1="${px(la, 0)[1]}" y2="${px(la, 0)[1]}"/>`;
   const [x1, y1] = px(-23.55, -46.63), [x2, y2] = px(-25.43, -49.27);
-  b += `<path class="tz-route tz-acc-s" d="M${x1} ${y1}L${x2} ${y2}"/><circle class="tz-acc-f" cx="${x1}" cy="${y1}" r="4"/><circle class="tz-acc-f" cx="${x2}" cy="${y2}" r="4"/><circle class="tz-ring tz-acc-s" cx="${x1}" cy="${y1}" r="10"/><circle class="tz-ring tz-acc-s" style="animation-delay:1s" cx="${x2}" cy="${y2}" r="10"/>${mono(x1 + 8, y1 - 8, 'São Paulo', 'tz-m tz-ink-t')}${mono(x2 - 8, y2 + 16, 'Curitiba', 'tz-m tz-ink-t', 'end')}`;
+  b += `<path class="tz-route tz-acc-s" d="M${x1} ${y1}L${x2} ${y2}"/><circle class="tz-acc-f" cx="${x1}" cy="${y1}" r="4"/><circle class="tz-acc-f" cx="${x2}" cy="${y2}" r="4"/><circle class="tz-ring tz-acc-s" cx="${x1}" cy="${y1}" r="10"/><circle class="tz-ring tz-acc-s" style="animation-delay:1s" cx="${x2}" cy="${y2}" r="10"/>${mono(x1 + 8, y1 - 8, 'São Paulo', 'tz-m tz-ink-t')}${mono(x2 + 14, y2 + 4, 'Curitiba', 'tz-m tz-ink-t')}`;
   return sv('0 0 200 120', b, 'São Paulo e Curitiba no mapa');
 }
 export function alert() {
@@ -40,5 +40,5 @@ export function scan() {
 // trilho de tempo em escala real (2015 a 2026)
 export function track(a, b, cls = 'tz-acc-f') {
   const X = (y) => 4 + ((y - 2015) / 12) * 192;
-  return sv('0 0 200 26', `<line class="tz-grid" x1="4" x2="196" y1="9" y2="9"/>${[2015, 2019, 2022, 2025].map((y) => `<line class="tz-grid" x1="${X(y)}" x2="${X(y)}" y1="5" y2="13"/>${mono(X(y), 24, y, 'tz-m', 'middle')}`).join('')}<rect class="${cls}" x="${X(a)}" y="5" width="${Math.max(3, X(b) - X(a))}" height="8" rx="2"/>`);
+  return sv('0 0 200 28', `<line class="tz-grid" x1="4" x2="196" y1="9" y2="9"/>${[2015, 2019, 2022, 2025].map((y) => `<line class="tz-grid" x1="${X(y)}" x2="${X(y)}" y1="5" y2="13"/>${mono(y === 2015 ? 1 : X(y), 24, y, 'tz-m', y === 2015 ? 'start' : 'middle')}`).join('')}<rect class="${cls}" x="${X(a)}" y="5" width="${Math.max(3, X(b) - X(a))}" height="8" rx="2"/>`);
 }

@@ -41,4 +41,4 @@ O teste gera o build e roda o Playwright em 390x844, 768x1024, 1440x900 e 1920x1
 
 Cabinet Grotesk vem da Fontshare (Indian Type Foundry, licença ITF Free Font). Geist Mono vem do pacote @fontsource.
 
-O contorno do mapa vem do Natural Earth (domínio público), pelo projeto world.geo.json.
+O contorno do mapa vem do Natural Earth 1:50m (domínio público), pelo repositório nvkelso/natural-earth-vector.

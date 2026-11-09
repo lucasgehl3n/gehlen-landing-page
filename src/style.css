@@ -230,7 +230,8 @@ code{font-size:.92em}
 .sm__y .sm__tk{height:24px}
 .sm__y .sm__tk span{position:absolute;top:6px;transform:translateX(-50%);font:11px/16px var(--mono);color:var(--mut)}
 .sm__y .sm__tk span.end{transform:translateX(-100%)}.sm__y .sm__tk span.odd{display:none}
-@container (min-width:640px){.sm{padding:var(--s5)}.sm__h,.sm__r,.sm__y{grid-template-columns:9.5em minmax(0,1fr)}.sm__h .sm__l,.sm__y .sm__l{display:block}.sm__h .sm__l{visibility:hidden}.sm__r .sm__l{margin-top:0;font-size:12px}.sm__y .sm__tk span.odd{display:block}.sm__tk{height:32px}.sm__r i{top:8px;height:16px}.sm__r i em{display:block;position:static;padding:0 var(--s1);color:var(--bg);font-size:10.5px;line-height:16px;overflow:hidden;text-overflow:ellipsis}.sm__r i:not(.now) em{color:#111412}}
+@container (min-width:640px){.sm{padding:var(--s5)}.sm__h,.sm__r,.sm__y{grid-template-columns:9.5em minmax(0,1fr)}.sm__h .sm__l,.sm__y .sm__l{display:block}.sm__h .sm__l{visibility:hidden}.sm__r .sm__l{margin-top:0;font-size:12px}.sm__y .sm__tk span.odd{display:block}.sm__tk{height:32px}.sm__r i{top:8px;height:16px}.sm__r i em{display:block;position:static;padding:0 var(--s1);color:var(--bg);font-size:10.5px;line-height:16px;overflow:hidden;text-overflow:ellipsis}.sm__r i:not(.now) em{color:#111412}
+  .sm__r i.out em{position:absolute;left:100%;top:0;padding-left:var(--s2);color:var(--ink);overflow:visible}}
 /* visuais svg da home */
 .vz{display:block;width:100%;height:auto;overflow:visible}
 .vz-m{font:9px var(--mono);fill:var(--mut)}.vz-t{fill:var(--ink)}.vz-acc-t{fill:var(--acc)}.vz-mut{fill:var(--mut)}.vz-edu-t{fill:var(--edu)}
@@ -247,8 +248,8 @@ code{font-size:.92em}
 .live .vz-ring{animation:hp 2.4s infinite}
 .vz-arc{fill:none;stroke:var(--acc);stroke-width:1.2;stroke-dasharray:3 3}
 .live .vz-arc{animation:tzroute 1.4s linear infinite}
-.vz-lead{stroke:rgba(var(--ink-rgb),.35);stroke-width:1;stroke-dasharray:2 2}
-.vz-lens{fill:var(--bg);stroke:rgba(var(--ink-rgb),.35);stroke-width:1}
+.vz-land--nb{fill:rgba(var(--ink-rgb),.025);stroke:rgba(var(--ink-rgb),.16)}.vz-uf{fill:none;stroke:rgba(var(--ink-rgb),.14);stroke-width:.8;stroke-dasharray:2 2}
+
 .vz-frame{fill:none;stroke:rgba(var(--ink-rgb),.3);stroke-width:1}
 .vz-grid{stroke:rgba(var(--ink-rgb),.14);stroke-width:1}
 .vz-dot{fill:rgba(var(--ink-rgb),.3)}

@@ -35,7 +35,7 @@ export function cities() {
   const px = ([la, lo]) => [30 + (lo - lon0) * k * Math.cos((24 * Math.PI) / 180), 20 + (lat0 - la) * k];
   let b = '';
   for (let lo = -50; lo <= -45; lo++) { const x = px([0, lo])[0]; b += `<line x1="${x}" y1="10" x2="${x}" y2="180" stroke="${L(0.08)}"/>${lo % 2 ? '' : M(x + 2, 178, `${-lo}°O`, L(0.35))}`; }
-  for (let la = -22; la >= -26; la--) { const y = px([la, 0])[1]; b += `<line x1="10" y1="${y}" x2="310" y2="${y}" stroke="${L(0.08)}"/>${M(12, y - 3, `${-la}°S`, L(0.35))}`; }
+  for (let la = -22; la >= -26; la--) { const y = px([la, 0])[1]; b += `<line x1="10" y1="${y}" x2="310" y2="${y}" stroke="${L(0.08)}"/>${M(12, y < 15 ? y + 11 : y - 3, `${-la}°S`, L(0.35))}`; }
   const [x1, y1] = px(P.sp), [x2, y2] = px(P.cwb);
   const R = 6371, rad = Math.PI / 180, dLa = (P.cwb[0] - P.sp[0]) * rad, dLo = (P.cwb[1] - P.sp[1]) * rad;
   const km = Math.round((2 * R * Math.asin(Math.sqrt(Math.sin(dLa / 2) ** 2 + Math.cos(P.sp[0] * rad) * Math.cos(P.cwb[0] * rad) * Math.sin(dLo / 2) ** 2))) / 10) * 10;
@@ -120,7 +120,7 @@ export function hlsTimeline() {
     fraca: { man: 0.5, segs: [['240p', 1.3], ['360p', 1.5], ['360p', 1.4], ['480p', 1.7]] },
     boa: { man: 0.15, segs: [['240p', 0.2], ['720p', 0.5], ['1080p', 0.7], ['1080p', 0.7]] },
   };
-  const T = 6, X0 = 70, XW = 236, sx = (t) => X0 + (t / T) * XW;
+  const T = 7, X0 = 70, XW = 236, sx = (t) => X0 + (t / T) * XW;
   const html = `<div class="art art--ui hl" data-ui>
     <div class="seg" role="group" aria-label="Rede"><button type="button" aria-pressed="true" data-net="fraca">Rede fraca</button><button type="button" aria-pressed="false" data-net="boa">Wi-Fi</button><button type="button" class="replay" data-replay aria-label="Repetir">${icon('play', { size: 16 })}</button></div>
     <svg class="art__svg" viewBox="0 0 320 196" role="img" aria-label="Linha do tempo de carregamento do vídeo: manifesto, segmentos e primeiro quadro">
@@ -196,7 +196,7 @@ export function results(src) {
   const bar = (y, label, a, b, la, lb, max) => `${T(14, y, 12, label, C.neblina, 600)}
     <line x1="14" y1="${y + 14}" x2="${14 + (a / max) * 250}" y2="${y + 14}" stroke="${L(0.4)}" stroke-width="10" class="grow"/>${M(20 + (a / max) * 250, y + 17, la)}
     <line x1="14" y1="${y + 30}" x2="${14 + (b / max) * 250}" y2="${y + 30}" stroke="${C.sinal}" stroke-width="10" class="grow"/>${M(20 + (b / max) * 250, y + 33, lb, C.neblina)}`;
-  const body = bar(22, 'Conversão', 0.48, 2.3, '0,48% sem Shorts', '2,3% com Shorts', 2.6)
+  const body = bar(22, 'Conversão', 0.48, 2.3, '0,48% sem Shorts', '2,3% com Shorts', 3.2)
     + bar(84, 'Tempo médio no portal', 2.1, 7.9, '2,1 min', '7,9 min', 9.4)
     + bar(146, 'Imóveis vistos por sessão', 2.35, 12.55, '2,35', '12,55', 15);
   return { html: `<div class="art">${svg(body, '0 0 320 200', 'Gráfico: conversão de 0,48% para 2,3%, tempo médio de 2,1 para 7,9 minutos, imóveis vistos de 2,35 para 12,55')}<p class="art__src">Testes divulgados pela Pilar. ${src}</p></div>` };
