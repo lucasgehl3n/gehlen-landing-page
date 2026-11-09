@@ -96,15 +96,15 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     ['Organizo a entrega quando o prazo aperta', 'Quebro o trabalho em partes que cabem no prazo, divido as tarefas e fico perto de quem travou. O time pedia feature flags havia tempo; pesquisei, testei e implementei, e hoje cada parte liga primeiro para poucos.', 'flag: time interno, parte do público, todos'],
     ['Acompanho quem chega e sigo estudando', 'Fico perto de quem acabou de entrar e marco conversas de retorno para cada pessoa crescer. Mantenho runbooks e o guia de merge request, e o que estudo vira tech talk para o time.', 'runbooks, guia de MR e tech talks'],
   ];
-  // Uma task no time que lidero hoje. ia: o passo é feito por um agente de IA.
+  // Pipeline estático: uma task do Jira ao e2e. who: time | ia. Sem animação em loop.
   const RUN = [
-    ['Alguém do time abre a task no Jira.', 0],
-    ['Um agente escreve a história a partir do Figma, e o time revisa.', 1],
-    ['Quem pegou a task escreve o código. Algumas tasks vão direto para um agente de IA, e alguém do time revisa.', 0],
-    ['O code review abre sozinho quando o código sobe.', 1],
-    ['Sobe um ambiente de teste, e a IA testa antes de ele chegar ao time.', 1],
-    ['Os fluxos e2e percorrem o caminho de quem usa o produto.', 1],
-    ['O ambiente fica disponível, e o time valida e decide o que entra.', 0],
+    ['Task criada no Jira', 'jira', 'time'],
+    ['História escrita a partir do Figma', 'figma → jira', 'ia'],
+    ['Quem pegou a task escreve o código. Algumas tasks vão direto para um agente de IA, e alguém do time revisa.', 'git', 'time'],
+    ['Code review aberto sozinho', 'review', 'ia'],
+    ['Ambiente de teste no ar, testado pela IA', 'ambiente', 'ia'],
+    ['Fluxos e2e conferidos', 'e2e', 'ia'],
+    ['Ambiente liberado para o time validar', 'slack', 'time'],
   ];
   const IA = [
     ['Tasks automatizadas', 'Automatizei tasks com Jira, Slack e agentes de IA, para o time gastar menos tempo com rotina de ferramenta.'],
@@ -127,9 +127,9 @@ ${topbar('cv', './')}
     <p class="cta__note">Agendar abre o WhatsApp. Ou <a href="mailto:${EMAIL}">${EMAIL}</a></p>
   </div>
   <figure class="run" aria-labelledby="run-h">
-    <h2 class="run__h" id="run-h">Como uma task anda no meu time hoje</h2>
-    <ol class="run__list">${RUN.map(([t, ia], i) => `<li class="run__i${ia ? ' run__i--ia' : ''}"><span class="run__n">${i + 1}</span><span class="run__t">${t}</span></li>`).join('')}</ol>
-    <figcaption class="run__cap">Os números em destaque são os passos que um agente de IA faz. Ele cuida do repetitivo; o que entra no produto continua sendo decisão do time.</figcaption>
+    <div class="run__task"><span class="run__k">task</span><h2 class="run__h" id="run-h">Uma task, do Jira ao e2e</h2></div>
+    <ol class="run__list">${RUN.map(([t, src, who]) => `<li class="run__i${who === 'ia' ? ' run__i--ia' : ''}" data-s="ok"><span class="run__node" aria-hidden="true"></span><span class="run__t">${t}</span><span class="run__m"><code translate="no">${src}</code><span class="run__who run__who--${who}">${who === 'ia' ? 'agente de IA' : 'time'}</span></span></li>`).join('')}</ol>
+    <figcaption class="run__cap">A IA cuida do repetitivo. O time decide o que entra.</figcaption>
   </figure>
 </section>
 <section class="ia" id="ia" aria-labelledby="ia-h">
