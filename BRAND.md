@@ -3,6 +3,8 @@
 Folha de identidade (tema, marca, tipo, ícones, grafismos, ilustrações): `brand.html` (o `npm test` gera o print em `shots/brand-sheet.png`). Código-fonte da marca: `src/brand.js`.
 
 ## Ideia
+> **Revisão de 09/11/2026 (branch `humanize`).** O Lucas pediu para tirar o que deixava o site com cara de feito por IA. Saíram: pontos pulsando, `HEAD -> main`, hashes de commit, "Merge branch", o terminal digitável, os comandos `$ git ...` nos blocos, o rodapé `git commit`, o painel falso do hero com status e contador, e as animações em loop. O grafo continua como linha do tempo, sem fantasia de git. O texto abaixo descreve a versão anterior e fica como histórico.
+
 A home é um grafo de commits no estilo `git log --graph`, e o grafo é a peça principal da página. A `main` é a carreira: Vero (abr/2019), Conecta (mar/2020), Compass (ago/2022), Pilar sênior (nov/2024) e `tag: tech-lead` (set/2025). A branch `formacao` sai do IFRS (2015), passa pela UCS, recebe o merge do TCC Pelos Caminhos e entra na main em 2023. Cada case é uma branch que nasce na main, ganha commits (desafio, o que eu fiz, o que mudou) e volta com um merge. O HEAD pulsa no merge mais recente.
 
 ### Como a home prende sem precisar abrir um story
@@ -53,8 +55,9 @@ Tons da Serra Gaúcha: neblina, basalto, musgo. O acento é raro e quer dizer "o
 Um tema só, escuro, decidido pelo Lucas. O tema claro (neblina + petróleo) e o toggle saíram do código. O laranja (#FF5A1F) da primeira versão também foi descartado a pedido dele.
 
 ## Tipo
-- **Cabinet Grotesk** (Fontshare, licença ITF Free Font License, uso comercial liberado), arquivos em `public/fonts/`. Títulos 800 com tracking negativo; texto 500/400.
-- **Geist Mono** (@fontsource, OFL) para anos, rótulos, fontes e dados.
+- **Cabinet Grotesk** (Fontshare, licença ITF Free Font License, uso comercial liberado), arquivos em `public/fonts/`. Títulos, botões e navegação, 700/800 com tracking negativo.
+- **Geist** (pacote oficial da Vercel, OFL, em `public/fonts/`) no texto corrido.
+- **Geist Mono** (mesmo pacote, OFL) para anos, rótulos, fontes e dados.
 - Sem serifa em nenhum lugar.
 
 ## Ícones e grafismos
@@ -121,3 +124,18 @@ Cada visual mostra um fato do LinkedIn ou de fonte pública:
 - Compass/Vivo: portal B2B em micro frontends e um exemplo de mutante (`>` virando `>=`). É uma ilustração do conceito, sem telas nem nomes do projeto.
 - Conecta: ERP em .NET com os módulos fiscais que mantive (pedidos, entradas, NF-e, NFC-e).
 - Formação: faixa de anos em que estudei (IFRS, UCS) e trabalhei ao mesmo tempo.
+
+## Referências de alto padrão aplicadas (09/11/2026)
+
+- Charles Jaja e Pavel Medvedev: o hero ganhou uma frase que diz o trabalho e o botão "Agendar conversa" (WhatsApp, link em `src/config.js`).
+- Pavel e Jared Lukes: seção "Como eu trabalho" em 4 passos, com o artefato real de cada passo.
+- Charles Jaja: cada case abre em contexto, gargalo e impacto, no cartão do merge e nos stories (Contexto, Gargalo, Decisão, Impacto).
+- Charles e Pavel: componente de depoimento com nome, cargo e LinkedIn. Desligado até haver depoimento autorizado.
+- Página `/servicos/`: o processo de consultoria desenhado como uma branch (`git checkout -b ia-no-time` até o merge), no mesmo idioma visual do grafo.
+
+## Hero v2 e IA no dia a dia do time (09/11/2026)
+
+- **Hero:** nome, frase que vende o Lucas (tech-prod com visão de negócio, IA no time), CTA "Agendar conversa" (WhatsApp) e "IA no seu time" (no celular, "Serviços"), e-mail embaixo. À direita no desktop, logo abaixo no celular, o cartão "Uma task, do Jira ao e2e": sete etapas numa linha como a do grafo, cada uma com a ferramenta pública (Jira, Figma, Slack) e quem executa (time ou agente de IA). As etapas acendem uma a uma, o trilho champanhe desce entre elas e o ciclo recomeça. O cartão diz que é simulação e não traz dado do time. Para fora da tela ou com a aba oculta, para; com movimento reduzido, aparece tudo feito, parado.
+- **IA no dia a dia do time:** seis peças que já rodam (tasks com Jira e Slack, histórias a partir do Figma, code review automático, ambientes de teste testados pela IA, e2e, sprint em conjunto). Sem número, sem nome de empresa ou de ferramenta interna.
+- **Terminal** saiu do hero e foi para a abertura do Histórico, junto do grafo que ele controla.
+- **Referências (abertas em 09/11/2026):** Linear (hero com a atividade de uma issue em que pessoas e agentes aparecem na mesma linha do tempo, cada evento com autor), Vercel e GitHub Actions (lista de etapas com estado: na fila, rodando, feito), Rauno Freiberg (apresentação curta e pessoal no primeiro contato), Brittany Chiang e Linear (grade com divisórias de 1 px na seção de IA).

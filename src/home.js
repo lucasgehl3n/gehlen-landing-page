@@ -1,16 +1,17 @@
-// Home: grafo de commits protagonista. main = carreira; formacao = IFRS/UCS; cada case é uma branch com commits e merge.
+// Home: linha do tempo da carreira. A linha principal é a carreira, a da formação é IFRS/UCS, e cada projeto sai da linha e volta quando foi entregue.
 import { mark, icon } from './brand.js';
 import * as Z from './teasers.js';
 import * as V from './visuals.js';
+import { topbar, agendar, depoimentos } from './shell.js';
+import { AGENDAR, LINKEDIN, MOSTRAR_DEPOIMENTOS, DEPOIMENTOS } from './config.js';
+import { cafeHtml, initCafe } from './cafe.js';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = (s, el = document) => el.querySelector(s);
-const hash = (s) => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16).padStart(8, '0').slice(0, 7); };
 const norm = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
   const BR = { time: 'time-e-engenharia', alertas: 'radar-imoveis', shorts: 'shorts-hls', mapa: 'mapa-h3', cidade: 'segunda-cidade', pelos: 'pelos-caminhos', formacao: 'formacao' };
-  const BYBR = Object.fromEntries(Object.entries(BR).map(([k, v]) => [v, k]));
   const TAGS = Object.fromEntries(SETS.map((s) => [s.id, s.tags]));
   const TEASE = { time: Z.checklist, alertas: Z.alert, shorts: Z.shorts, mapa: Z.hex, cidade: Z.cities, pelos: Z.scan };
   const SUM = {
@@ -21,12 +22,21 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     cidade: 'Liderei a expansão do portal para a segunda cidade. Hoje ele atende São Paulo e Curitiba.',
     pelos: 'TCC: plataforma de adoção com app, API, permissões por perfil e raça pela foto.',
   };
-  const ST = (set, i) => { const s = setOf(set).stories[i]; return `${s.k.toLowerCase()}: ${s.t.charAt(0).toLowerCase()}${s.t.slice(1)}`; };
-  const commits = (id, idx, lane = 1) => idx.map((i) => ({ kind: 'c', lane, set: id, s: i, br: id, msg: ST(id, i), tags: TAGS[id] }));
+  // cada case no cartão: contexto, gargalo e impacto
+  const CGI = {
+    time: ['Passei a liderar o time do PilarHomes em setembro de 2025.', 'O processo vivia na cabeça de quem já estava no time. Onboarding e revisão de código dependiam de improviso.', 'Escrevi o guia do clone ao merge, mantenho os runbooks e coloquei feature flags em uso. Quem chega encontra o caminho escrito, e as entregas saem em fases.'],
+    alertas: ['Quem procurava imóvel no portal tinha de repetir a busca para ver novidade. Na rede, os corretores pediam alertas parecidos.', 'Cada produto ia acabar com o seu próprio sistema de alertas.', 'Escrevi sozinho a RFC de uma base única de buscas salvas e avisos, e ela foi aprovada. Portal e rede usam a mesma base.'],
+    shorts: ['Propus o Shorts no PilarHomes e levei a feature do estudo de mercado à entrega.', 'Com o uso crescendo, o vídeo demorava a começar, sobretudo em rede fraca.', 'Desenhei a entrega em HLS e escrevi a proposta de reprocessar o catálogo, que foi aprovada. Segundo a VEJA, os vídeos curtos já entram na jornada de 40% dos potenciais clientes do portal.'],
+    mapa: ['Fiquei na linha de frente da busca avançada, a feature mais complexa do ano no portal.', 'Com milhares de imóveis, o mapa virava um amontoado de pinos.', 'Comparei formas de agregação espacial e agrupei os imóveis em células H3 no backend. O mapa mostra quantos imóveis há em cada região, em qualquer zoom.'],
+    cidade: ['O PilarHomes nasceu atendendo uma cidade e precisava chegar a uma segunda.', 'A expansão precisava de viabilidade avaliada e arquitetura desenhada antes de chegar ao time.', 'Liderei essa parte pela engenharia. Hoje o portal atende São Paulo e Curitiba.'],
+    pelos: ['Meu TCC em Ciência da Computação na UCS: uma plataforma de adoção de animais.', 'Três públicos com permissões diferentes: quem adota, as ONGs e os voluntários.', 'Entreguei app, API e reconhecimento de raça pela foto. O projeto fechou meu bacharelado em 2023.'],
+  };
+  const cgi = (id) => `<span class="cgi">${['contexto', 'gargalo', 'impacto'].map((k, i) => `<span class="cgi__r cgi__r--${k}"><span class="cgi__k">${k}</span><span class="cgi__v">${CGI[id][i]}</span></span>`).join('')}</span>`;
+  const commits = (id, idx, lane = 1) => idx.map((i) => ({ kind: 'c', lane, set: id, s: i, br: id, tags: TAGS[id] }));
   const merge = (id, extra = {}) => ({ kind: 'm', lane: 0, set: id, s: 0, br: id, merge: id, title: setOf(id).titulo, tags: TAGS[id], ...extra });
   const ROWS = [
     { kind: 'year', label: '2025 até hoje', sub: 'Tech Lead' },
-    merge('time', { refs: ['HEAD -> main'], head: 1 }), ...commits('time', [4, 3, 1, 0]),
+    merge('time', { head: 1 }), ...commits('time', [4, 3, 1, 0]),
     merge('alertas'), ...commits('alertas', [2, 1, 0]),
     merge('shorts'), ...commits('shorts', [2]),
     { kind: 'tag', lane: 0, set: 'trajetoria', s: 5, br: 'main', title: 'Passei a liderar o time do PilarHomes', refs: ['tag: tech-lead'], date: 'set/2025', y: 2025.67, span: [2025.67, 2026.9], tags: ['Carreira'] },
@@ -35,10 +45,10 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     ...commits('shorts', [1, 0]),
     merge('mapa'), ...commits('mapa', [2, 1, 0]),
     merge('cidade'), ...commits('cidade', [2, 1, 0]),
-    { kind: 'era', lane: 0, set: 'trajetoria', s: 5, br: 'main', co: 'Pilar', role: 'Engenheiro de software sênior', date: 'nov/2024', span: [2024.83, 2025.67], y: 2024.83, period: 'nov/2024 a set/2025', txt: 'Entrei no lançamento do PilarHomes e trabalhei do front ao back. Virei o ponto focal com produto e design.', stack: ['Nuxt', 'Node', 'Python', 'AWS'], tags: ['Carreira'] },
+    { kind: 'era', lane: 0, set: 'trajetoria', s: 5, br: 'main', co: 'Pilar', role: 'Engenheiro de software sênior', date: 'nov/2024', span: [2024.83, 2025.67], y: 2024.83, period: 'nov/2024 a set/2025', txt: 'Entrei no lançamento do PilarHomes e trabalhei do front ao back. Participei das decisões de produto e de negócio com o time, além da arquitetura.', stack: ['Nuxt', 'Node', 'Python', 'AWS'], tags: ['Carreira'] },
     { kind: 'blk', id: 'shortlog' },
     { kind: 'year', label: '2019 a 2024', sub: 'trabalho e faculdade em paralelo' },
-    { kind: 'm', lane: 0, set: 'trajetoria', s: 2, br: 'formacao', merge: 'formacao', title: 'Bacharel em Ciência da Computação', date: '2023', y: 2023.9, span: [2019, 2023.95], txt: 'Bacharelado na UCS, em Caxias do Sul. A formação entra na main.', tags: ['Formação'], edu: 1 },
+    { kind: 'm', lane: 0, set: 'trajetoria', s: 2, br: 'formacao', merge: 'formacao', title: 'Bacharel em Ciência da Computação', date: '2023', y: 2023.9, span: [2019, 2023.95], txt: 'Bacharelado na UCS, em Caxias do Sul, em paralelo com o trabalho.', tags: ['Formação'], edu: 1 },
     { kind: 'm', lane: 1, set: 'pelos', s: 0, br: 'pelos', merge: 'pelos', into: 'formacao', title: 'Pelos Caminhos', tags: TAGS.pelos, edu: 1, y: 2023.8 },
     ...commits('pelos', [3, 2], 2),
     { kind: 'era', lane: 0, set: 'trajetoria', s: 4, br: 'main', co: 'Compass.uol', role: 'Desenvolvedor front-end pleno', date: 'ago/2022', span: [2022.6, 2024.83], y: 2022.6, period: 'ago/2022 a nov/2024', txt: 'Alocado na Vivo, no portal B2B de empresas, feito em micro frontends. Implantei testes de mutação com Stryker e atuei em SRE.', stack: ['Vue', 'TypeScript', 'Node', 'Stryker', 'Kibana'], vis: 'mfe', tags: ['Carreira'] },
@@ -50,7 +60,7 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     { kind: 'edu', lane: 1, set: 'trajetoria', s: 0, br: 'formacao', title: 'IFRS, técnico em Informática', date: '2015', y: 2015.1, span: [2015, 2018.95], txt: 'Curso técnico no campus Farroupilha.', tags: ['Formação'], root: 1 },
   ];
   const NOG = (r) => r.kind === 'year' || r.kind === 'blk';
-  ROWS.forEach((r, i) => { r.i = i; if (!NOG(r)) r.h = hash(`${r.set}${r.s}${r.title || r.msg || r.co}`); });
+  ROWS.forEach((r, i) => { r.i = i; });
   const G = ROWS.filter((r) => !NOG(r));
   const FILTERS = ['Tudo', 'Produto', 'Arquitetura', 'Time', 'Formação', 'Carreira'];
 
@@ -61,74 +71,112 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     const a = `data-row="${r.i}" data-br="${r.br}" data-tags="${(r.tags || []).join('|')}"`;
     if (r.kind === 'blk') return BLK[r.id]();
     if (r.kind === 'year') return `<li class="yr" aria-hidden="true"><span class="yr__l">${r.label}</span><span class="yr__s">${r.sub}</span></li>`;
-    if (r.kind === 'c') return `<li class="r r--c in-${r.lane}"><button type="button" ${a}><code translate="no">${r.h}</code><span>${r.msg}</span></button></li>`;
+    if (r.kind === 'c') { const st = setOf(r.set).stories[r.s]; return `<li class="r r--c in-${r.lane}"><button type="button" ${a}><span class="c__k">${st.k}</span><span class="c__t">${st.t}</span></button></li>`; }
     if (r.kind === 'm' && !r.edu) return `<li class="r r--m r--${r.set}"><button type="button" ${a}>
-      <span class="m__git"><code translate="no">${r.h}</code> Merge branch '${BR[r.merge]}' ${refs(r)}</span>
-      <span class="m__body"><span class="m__vis">${TEASE[r.set]()}</span><span class="m__txt"><span class="m__t">${r.title}</span><span class="m__d">${SUM[r.set]}</span><span class="m__tags">${tagchips(r)}<span class="m__go">Ver a história ${icon('right', { size: 16 })}</span></span></span></span></button></li>`;
+      <span class="m__git">Merge branch '${BR[r.merge]}' ${refs(r)}</span>
+      <span class="m__body"><span class="m__vis">${TEASE[r.set]()}</span><span class="m__txt"><span class="m__t">${r.title}</span>${cgi(r.set)}<span class="m__tags">${tagchips(r)}<span class="m__go">Ver a história ${icon('right', { size: 16 })}</span></span></span></span></button></li>`;
     if (r.kind === 'm' && r.set === 'pelos') return `<li class="r r--m r--edu r--pelos"><button type="button" ${a}>
-      <span class="m__git"><code translate="no">${r.h}</code> Merge branch 'pelos-caminhos' into formacao</span>
-      <span class="m__body"><span class="m__vis">${Z.scan()}</span><span class="m__txt"><span class="m__t">Pelos Caminhos</span><span class="m__d">${SUM.pelos}</span><span class="m__tags">${tagchips(r)}<span class="m__go">Ver a história ${icon('right', { size: 16 })}</span></span></span></span></button></li>`;
-    if (r.kind === 'm') return `<li class="r r--grad"><button type="button" ${a}><span class="m__git"><code translate="no">${r.h}</code> Merge branch 'formacao' · ${r.date}</span><span class="g__t">${icon('cap', { size: 22 })}${r.title}</span><span class="g__d">UCS, Caxias do Sul. A formação entra na main.</span><span class="g__vis">${V.parallel()}</span></button></li>`;
+      <span class="m__git">Merge branch 'pelos-caminhos' into formacao</span>
+      <span class="m__body"><span class="m__vis">${Z.scan()}</span><span class="m__txt"><span class="m__t">Pelos Caminhos</span>${cgi('pelos')}<span class="m__tags">${tagchips(r)}<span class="m__go">Ver a história ${icon('right', { size: 16 })}</span></span></span></span></button></li>`;
+    if (r.kind === 'm') return `<li class="r r--grad"><button type="button" ${a}><span class="m__git">Merge branch 'formacao' · ${r.date}</span><span class="g__t">${icon('cap', { size: 22 })}${r.title}</span><span class="g__d">UCS, Caxias do Sul. Quatro anos de faculdade em paralelo com o trabalho.</span><span class="g__vis">${V.parallel()}</span></button></li>`;
     if (r.kind === 'tag') return `<li class="r r--tag"><button type="button" ${a}><span class="t__ref">${refs(r)}<time>${r.date}</time></span><span class="t__t">${r.title}</span><span class="t__d">Lidero o time de engenharia do PilarHomes, nas duas cidades.</span></button></li>`;
-    if (r.kind === 'era') return `<li class="r r--era${r.vis ? ' r--era-v' : ''}"><button type="button" ${a}><span class="e__p"><code translate="no">${r.h}</code>${r.period}${refs(r)}</span><span class="e__co">${r.co}</span><span class="e__role">${r.role}</span><span class="e__txt">${r.txt}</span><span class="e__tr">${Z.track(r.span[0], r.span[1], 'tz-ink-f')}</span><span class="e__st">${r.stack.map((s) => `<span>${s}</span>`).join('')}</span>${r.vis ? `<span class="e__vis">${V[r.vis]()}</span>` : ''}</button></li>`;
-    return `<li class="r r--eduk"><button type="button" ${a}><span class="m__git"><code translate="no">${r.h}</code> formacao · ${r.date}</span><span class="g__t">${icon('cap', { size: 20 })}${r.title}</span><span class="g__d">${r.txt}</span></button></li>`;
+    if (r.kind === 'era') return `<li class="r r--era${r.vis ? ' r--era-v' : ''}"><button type="button" ${a}><span class="e__p">${r.period}${refs(r)}</span><span class="e__co">${r.co}</span><span class="e__role">${r.role}</span><span class="e__txt">${r.txt}</span><span class="e__tr">${Z.track(r.span[0], r.span[1], 'tz-ink-f')}</span><span class="e__st">${r.stack.map((s) => `<span>${s}</span>`).join('')}</span>${r.vis ? `<span class="e__vis">${V[r.vis]()}</span>` : ''}</button></li>`;
+    return `<li class="r r--eduk"><button type="button" ${a}><span class="m__k">Formação, ${r.date}</span><span class="g__t">${icon('cap', { size: 20 })}${r.title}</span><span class="g__d">${r.txt}</span></button></li>`;
   };
   const BLK = {
     remote: () => `<li class="blk blk--remote"><p class="blk__cmd"><span class="p">$</span> git remote -v</p><div class="blk__body"><div class="blk__vis">${V.remote()}</div><dl class="rm">
-      <div><dt>caxias-do-sul</dt><dd>UCS, Vero e Conecta. Hoje trabalho daqui, remoto.</dd></div>
-      <div><dt class="rm--edu">farroupilha</dt><dd>IFRS, onde fiz o técnico em Informática.</dd></div>
-      <div><dt class="rm--acc">sao-paulo · curitiba</dt><dd>As duas cidades que o PilarHomes atende.</dd></div></dl></div></li>`,
+      <div><dt>Caxias do Sul</dt><dd>UCS, Vero e Conecta. Hoje trabalho daqui, remoto.</dd></div>
+      <div><dt class="rm--edu">Farroupilha</dt><dd>IFRS, onde fiz o técnico em Informática.</dd></div>
+      <div><dt class="rm--acc">São Paulo e Curitiba</dt><dd>As duas cidades que o PilarHomes atende.</dd></div></dl></div></li>`,
     shortlog: () => `<li class="blk blk--sl"><p class="blk__cmd"><span class="p">$</span> git shortlog -s --since=2019 <span class="blk__h">meses por cargo</span></p>${V.shortlog()}</li>`,
   };
-  const SUG = ['git log --tag=arquitetura', 'git show shorts-hls', 'git checkout pelos-caminhos', 'git branch', 'help'];
+  const HOW = [
+    ['Entro na decisão antes de virar tarefa', 'Sento com produto e design enquanto a ideia ainda está no quadro. Peso o que muda para quem usa, o custo e a prioridade frente ao resto do roadmap, e a tarefa chega ao time com a arquitetura desenhada.', 'custo, impacto e prioridade'],
+    ['Testo a ideia pequena, depois proponho', 'Quando o caminho não está claro, faço uma prova de conceito com a parte mais arriscada. O que ela mostra entra numa proposta escrita, com alternativas e custo. Se vejo risco, defendo o lado contrário na conversa e sigo o que o time decidir.', 'PoC, proposta escrita, decisão do time'],
+    ['Organizo a entrega quando o prazo aperta', 'Quebro o trabalho em partes que cabem no prazo, divido as tarefas e fico perto de quem travou. O time pedia feature flags havia tempo; pesquisei, testei e implementei, e hoje cada parte liga primeiro para poucos.', 'flag: time interno, parte do público, todos'],
+    ['Acompanho quem chega e sigo estudando', 'Fico perto de quem acabou de entrar e marco conversas de retorno para cada pessoa crescer. Mantenho runbooks e o guia de merge request, e o que estudo vira tech talk para o time.', 'runbooks, guia de MR e tech talks'],
+  ];
+  // Pipeline estático: quem faz cada passo (time, produto e/ou agente). Sem animação em loop.
+  const WHO = { time: 'time', ia: 'agente de IA', produto: 'produto' };
+  const RUN = [
+    ['Time decide o que entra e por quê', 'produto', ['time']],
+    ['Task criada no Jira', 'jira', ['time']],
+    ['Quebra e refino com julgamento do time', 'refino', ['time']],
+    ['História a partir do Figma; o time revisa', 'figma → jira', ['ia', 'time']],
+    ['Código na branch. Algumas tasks vão direto para um agente de IA; o time revisa.', 'git', ['time', 'ia']],
+    ['Code review aberto; o time decide o merge', 'review', ['ia', 'time']],
+    ['Ambiente de teste no ar, testado pela IA', 'ambiente', ['ia']],
+    ['Fluxos e2e conferidos', 'e2e', ['ia']],
+    ['Time valida e coordena a sprint', 'slack', ['time']],
+  ];
+  const IA = [
+    ['Tasks automatizadas', 'Automatizei tasks com Jira, Slack e agentes de IA, para o time gastar menos tempo com rotina de ferramenta.'],
+    ['Histórias escritas a partir do Figma', 'Coordeno a escrita autônoma das histórias a partir das tasks do Figma. O time revisa e ajusta em vez de começar da página em branco.'],
+    ['Review aberto automaticamente', 'Quando o código sobe, o code review já abre. Ninguém precisa lembrar de pedir.'],
+    ['Ambientes testados pela IA', 'Cada ambiente de teste sobe, passa pelos testes que a IA roda e fica disponível para o time conferir.'],
+    ['Fluxos de ponta a ponta', 'Os testes e2e percorrem o caminho de quem usa o produto em cada ambiente de teste.'],
+    ['A sprint roda em conjunto', 'Coordeno o trabalho de pessoas e agentes na mesma sprint: quem pega o quê, o que a IA adianta e o que precisa de alguém.'],
+  ];
   const app = $('#app');
   app.innerHTML = `
-<header class="top"><a class="brand" href="#" aria-label="Lucas Gehlen, início">${mark({ size: 32 })}<span translate="no">Lucas Gehlen</span></a><nav class="top__r" aria-label="Seções"><a href="#historico">Histórico</a><a href="#contato">Contato</a></nav></header>
-<section class="hero">
+${topbar('cv', './')}
+<section class="hero" aria-labelledby="hero-h">
   <div class="hero__id">
-    <p class="hero__head"><span class="pulse"></span><code translate="no">HEAD -> main</code> · hoje</p>
-    <h1 translate="no">Lucas Gehlen</h1>
-    <p class="role">Tech Lead do PilarHomes</p>
-    <p class="line">Trabalho entre produto e engenharia: vejo o que é viável e desenho a arquitetura antes de a tarefa chegar ao time. O time é a minha principal entrega.</p>
-    <p class="meta">Caxias do Sul · Vue, Nuxt, Node, Python, AWS</p>
+    <p class="hero__head">Tech Lead e consultor de IA, em Caxias do Sul</p>
+    <h1 id="hero-h" translate="no">Lucas Gehlen</h1>
+    <p class="job">Lidero engenharia de produto com visão de negócio e coloco IA para trabalhar junto com o time, da task ao teste e2e.</p>
+    <p class="line">Sou de tech-prod: entro nas decisões de produto e de negócio, peso custo e prioridade e desenho a arquitetura. No time que lidero, coloquei agentes de IA para escrever histórias, abrir code review e testar cada ambiente.</p>
+    <div class="hero__cta">${agendar('geral')}<a class="cta cta--ghost" href="servicos/"><span class="w-l">IA no seu time</span><span class="w-s">Serviços</span>${icon('right', { size: 18 })}</a></div>
+    <p class="cta__note">Agendar abre o WhatsApp. Ou <a href="mailto:${EMAIL}">${EMAIL}</a></p>
   </div>
-  <div class="term" role="region" aria-label="Terminal para navegar no histórico">
-    <div class="term__bar"><code translate="no">~/lucas-gehlen</code><code class="term__br">(main)</code></div>
-    <div class="term__out" aria-live="polite"><p><span class="p">$</span> git log --oneline --graph</p><p class="o">${G.filter((r) => r.kind === 'm').length} merges, ${G.filter((r) => r.kind === 'era' || r.kind === 'edu' || r.kind === 'tag').length} etapas de carreira e formação. Digite <b>help</b> ou toque numa sugestão.</p></div>
-    <form class="term__in" autocomplete="off"><label for="cmd" class="p">$</label><input id="cmd" name="cmd" spellcheck="false" autocapitalize="off" placeholder="git show shorts-hls" aria-label="Comando git"></form>
-    <div class="term__sug">${SUG.map((s) => `<button type="button" data-cmd="${s}">${s}</button>`).join('')}</div>
-  </div>
+  <figure class="run" aria-labelledby="run-h">
+    <div class="run__task"><span class="run__k">task</span><h2 class="run__h" id="run-h">Uma task, do Jira ao e2e</h2></div>
+    <ol class="run__list">${RUN.map(([t, src, who]) => { const w = Array.isArray(who) ? who : [who]; const ia = w.includes('ia'); const tags = w.map((x) => `<span class="run__who run__who--${x}">${WHO[x] || x}</span>`).join(''); return `<li class="run__i${ia ? ' run__i--ia' : ''}" data-s="ok"><span class="run__node" aria-hidden="true"></span><span class="run__t">${t}</span><span class="run__m"><code translate="no">${src}</code>${tags}</span></li>`; }).join('')}</ol>
+    <figcaption class="run__cap">A IA adianta o repetitivo. O time decide, revisa e coordena.</figcaption>
+  </figure>
 </section>
-<div class="tagbar" role="group" aria-label="Filtrar commits por tag"><code translate="no">--tag</code>${FILTERS.map((f, i) => `<button type="button" data-f="${f}" aria-pressed="${!i}">${f}</button>`).join('')}</div>
+<section class="ia" id="ia" aria-labelledby="ia-h">
+  <div class="ia__head"><h2 class="sec__h" id="ia-h">IA no dia a dia do time</h2><p class="sec__p">Tudo isso já roda no time que lidero. Montei cada peça para tirar trabalho repetitivo de alguém, e a decisão continua com as pessoas.</p></div>
+  <ul class="ia__list">${IA.map(([t, p]) => `<li class="ia__i"><h3 class="ia__t">${t}</h3><p class="ia__p">${p}</p></li>`).join('')}</ul>
+  <div class="ia__cta"><a class="cta" href="${AGENDAR.ia}" target="_blank" rel="noopener">Quero isso no meu time</a><a class="ia__more" href="servicos/">Como funciona a consultoria ${icon('right', { size: 16 })}</a></div>
+</section>
+<section class="how" id="como-trabalho" aria-labelledby="how-h">
+  <div class="how__head"><h2 class="sec__h" id="how-h">Como eu trabalho</h2><p class="sec__p">Quatro passos que repito em todo time que lidero.</p></div>
+  <ol class="how__list">${HOW.map(([t, p, a], i) => `<li class="how__i"><span class="how__n" aria-hidden="true">${i + 1}</span><h3 class="how__t">${t}</h3><p class="how__p">${p}</p><p class="how__a">${a.charAt(0).toUpperCase()}${a.slice(1)}</p></li>`).join('')}</ol>
+</section>
+<section class="hist" aria-labelledby="hist-h">
+  <div class="hist__head"><h2 class="sec__h" id="hist-h">Histórico</h2><p class="sec__p">Minha carreira como um <code translate="no">git log</code>. Cada projeto é uma branch que volta num merge. Toque num projeto para ver a história completa.</p></div>
+</section>
+<div class="tagbar" role="group" aria-label="Filtrar o histórico"><span class="tagbar__l">Filtrar</span>${FILTERS.map((f, i) => `<button type="button" data-f="${f}" aria-pressed="${!i}">${f}</button>`).join('')}</div>
 <main class="stage">
   <section class="log" id="historico" aria-label="Histórico de carreira e projetos">
-    <svg class="graph" aria-hidden="true"><defs><clipPath id="pen"><rect x="-20" y="-40" width="400" height="0"/></clipPath></defs><g class="g-edges" clip-path="url(#pen)"></g><g class="g-nodes"></g><circle class="penhead" r="5"/></svg>
+    <svg class="graph" aria-hidden="true"><defs><clipPath id="pen"><rect x="-20" y="-40" width="400" height="0"/></clipPath></defs><g class="g-edges" clip-path="url(#pen)"></g><g class="g-nodes"></g></svg>
     <ol class="rows">${ROWS.map(rowHtml).join('')}</ol>
     <div class="blk blk--sm"><p class="blk__cmd"><span class="p">$</span> git log --stat --since=2019 -- stack/ <span class="blk__h">o que usei em cada empresa</span></p>${V.stackmap()}</div>
     <div class="stack"><p class="stack__h"><code translate="no">$ cat stack.txt</code></p><ol>
-      <li><span>front e BFF</span>Nuxt, Node</li><li><span>APIs e lambdas</span>Python</li><li><span>dados</span>MongoDB Atlas</li><li><span>infra</span>AWS ECS, Lambda, SQS, CloudFront, ElastiCache, Pulumi</li><li><span>entrega</span>GitLab CI/CD, Docker</li><li><span>observabilidade</span>Datadog, Mixpanel</li></ol></div>
+      <li><span>Front e BFF</span>Nuxt, Node</li><li><span>APIs e lambdas</span>Python</li><li><span>Dados</span>MongoDB Atlas</li><li><span>Infra</span>AWS ECS, Lambda, SQS, CloudFront, ElastiCache, Pulumi</li><li><span>Entrega</span>GitLab CI/CD, Docker</li><li><span>Observabilidade</span>Datadog, Mixpanel</li></ol></div>
   </section>
   <aside class="peek" aria-live="polite"><div class="peek__in"></div></aside>
 </main>
+<div class="dp-slot">${MOSTRAR_DEPOIMENTOS ? depoimentos(DEPOIMENTOS) : ''}</div>
+${cafeHtml()}
 <footer class="foot" id="contato">
-  <p class="foot__h">Fale comigo</p>
-  <div class="foot__term"><p><span class="p">$</span> git commit --allow-empty -m "<span class="foot__msg">oi, Lucas</span>"</p><p><span class="p">$</span> git push <span class="foot__mail">${EMAIL}</span></p></div>
-  <form class="foot__form"><label for="msg">Mensagem do commit</label><input id="msg" name="msg" maxlength="72" value="oi, Lucas" autocomplete="off"><a class="foot__send" href="mailto:${EMAIL}?subject=oi%2C%20Lucas">Enviar por e-mail</a></form>
-  <p class="foot__links"><a href="mailto:${EMAIL}">${EMAIL}</a><a href="https://www.linkedin.com/in/lgehlen" target="_blank" rel="noopener">LinkedIn</a><span>Caxias do Sul, RS</span></p>
+  <h2 class="foot__h">Fale comigo</h2>
+  <p class="foot__p">Se você quer IA trabalhando junto com o seu time, ou procura um Tech Lead que entre nas decisões de produto, me chama. A primeira conversa é para eu entender o seu contexto.</p>
+  <div class="hero__cta">${agendar('geral')}<a class="cta cta--ghost foot__send" href="mailto:${EMAIL}?subject=${encodeURIComponent('Oi, Lucas')}">Escrever por e-mail</a></div>
+  <p class="foot__links"><a href="mailto:${EMAIL}">${EMAIL}</a><a href="${AGENDAR.geral}" target="_blank" rel="noopener">WhatsApp</a><a href="${LINKEDIN}" target="_blank" rel="noopener">LinkedIn</a><span>Caxias do Sul, RS</span></p>
 </footer>
 <div class="scrub" aria-label="Linha do tempo" role="group"><span class="scrub__y">hoje</span><div class="scrub__t" role="slider" tabindex="0" aria-label="Ir para um ano" aria-valuemin="2015" aria-valuemax="2026" aria-valuenow="2026"><i class="scrub__th"></i></div></div>
-<div class="sheet" hidden><div class="sheet__in" role="dialog" aria-modal="false" aria-label="Prévia do commit"><span class="sheet__grab" aria-hidden="true"></span><button type="button" class="sheet__x" data-sheet-close aria-label="Fechar prévia">${icon('close', { size: 20 })}</button><div class="sheet__c"></div></div></div>
+<div class="sheet" hidden><div class="sheet__in" role="dialog" aria-modal="false" aria-label="Prévia do projeto"><span class="sheet__grab" aria-hidden="true"></span><button type="button" class="sheet__x" data-sheet-close aria-label="Fechar prévia">${icon('close', { size: 20 })}</button><div class="sheet__c"></div></div></div>
 <div class="st" id="st" role="dialog" aria-modal="true" aria-label="Stories" hidden></div>`;
 
-  /* ---------- tema ---------- */
-
   /* ---------- grafo ---------- */
-  const svg = $('.graph'), edges = $('.g-edges'), nodes = $('.g-nodes'), list = $('.rows'), clip = $('#pen rect'), penhead = $('.penhead');
+  const svg = $('.graph'), edges = $('.g-edges'), nodes = $('.g-nodes'), list = $('.rows'), clip = $('#pen rect');
   let ys = [], gTop = 0, H = 0, lit = new Set();
   const lw = () => (innerWidth < 768 ? 15 : 28), X = (l) => 10 + l * lw();
   function layout() {
     // offsetTop ignora o translate da animação de entrada; o nó fica na primeira linha de cada cartão
-    const ANC = { c: 'code', m: '.m__git', tag: '.t__ref', era: '.e__p', edu: '.m__git' };
+    const ANC = { c: '.c__k', m: '.m__git', tag: '.t__ref', era: '.e__p', edu: '.m__k' };
     ys = ROWS.map((r) => { if (NOG(r)) return null; const b = list.querySelector(`[data-row="${r.i}"]`), li = b.parentElement, a = b.querySelector(ANC[r.kind]); const lr = li.getBoundingClientRect(), ar = a.getBoundingClientRect(); return Math.round(li.offsetTop - list.offsetTop + (ar.top - lr.top) + ar.height / 2); });
     H = list.offsetHeight; svg.setAttribute('viewBox', `0 0 ${X(2) + 14} ${H}`); svg.style.width = `${X(2) + 14}px`; svg.style.height = `${H}px`;
     const P = [], S = (a, b) => Math.min(42, (b - a) / 3);
@@ -147,7 +195,7 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
     nodes.innerHTML = G.map((r) => {
       const x = X(r.lane), y = ys[r.i], k = r.kind === 'm' ? (r.edu ? 'n-edum' : 'n-merge') : r.kind === 'c' ? (r.lane === 2 ? 'n-educ' : 'n-commit') : r.kind === 'edu' ? 'n-edu' : 'n-career';
       const rad = { 'n-merge': 9, 'n-edum': 8, 'n-commit': 4.5, 'n-educ': 4.5, 'n-edu': 6, 'n-career': 7 }[k];
-      return `<g class="node ${k}" data-row="${r.i}" data-br="${r.br}" transform="translate(${x} ${y})">${r.head ? '<circle class="n-pulse" r="9"/>' : ''}${r.kind === 'm' ? `<circle class="n-ring" r="${rad}"/>` : ''}<circle class="n-dot" r="${rad}"/>${r.kind === 'm' && !r.edu ? '<circle class="n-core" r="3"/>' : ''}</g>`;
+      return `<g class="node ${k}" data-row="${r.i}" data-br="${r.br}" transform="translate(${x} ${y})"><circle class="n-dot" r="${rad}"/>${r.kind === 'm' && !r.edu ? '<circle class="n-core" r="3"/>' : ''}</g>`;
     }).join('');
     gTop = list.getBoundingClientRect().top + scrollY; lit = new Set(); onScroll(true);
   }
@@ -156,13 +204,17 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
   function onScroll(force) {
     const pen = reduce ? H + 100 : scrollY + innerHeight * 0.8 - gTop;
     clip.setAttribute('height', Math.max(0, pen + 40));
-    penhead.setAttribute('cx', X(0)); penhead.setAttribute('cy', Math.min(pen, H)); penhead.classList.toggle('on', pen > 0 && pen < H - 4 && !reduce);
     nodes.querySelectorAll('.node').forEach((n) => { const i = +n.dataset.row, on = ys[i] <= pen; if (on !== lit.has(i) || force === true) { n.classList.toggle('lit', on); on ? lit.add(i) : lit.delete(i); } });
     // scroll-spy: commit mais perto do centro
     const mid = scrollY + innerHeight * 0.45 - gTop; let best = null, bd = 1e9;
     G.forEach((r) => { const d = Math.abs(ys[r.i] - mid); if (d < bd && !hiddenRow(r)) { bd = d; best = r; } });
     if (best && best !== spy) { spy = best; if (!hoverRow && wide()) showPeek(best); updScrub(); }
-    $('.scrub').classList.toggle('on', mid > -200 && mid < H + 200);
+    // Scrub só com o histórico na tela e com o hero inteiro fora (inclui o card da task).
+    const heroBox = document.querySelector('.hero')?.getBoundingClientRect();
+    const histBox = document.querySelector('#historico')?.getBoundingClientRect();
+    const heroOnScreen = !!heroBox && heroBox.bottom > 0 && heroBox.top < innerHeight;
+    const histOnScreen = !!histBox && histBox.top < innerHeight - 48 && histBox.bottom > 48;
+    $('.scrub').classList.toggle('on', !heroOnScreen && histOnScreen);
     ticking = false;
   }
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => onScroll()); } }, { passive: true });
@@ -177,12 +229,11 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
   function peekHtml(r) {
     const s = setOf(r.set), st = s.stories[r.s];
     const vis = TEASE[r.set] ? TEASE[r.set]() : r.span ? Z.track(r.span[0], r.span[1], r.kind === 'edu' || r.edu ? 'tz-edu-f' : 'tz-acc-f') : '';
-    const brn = r.br === 'main' ? 'main' : BR[r.br];
     const useP = !(r.kind === 'm' && SUM[r.set]) && !r.txt;
     const links = useP ? st.p.match(/<a [^>]*>.*?<\/a>/g) || [] : [];
     const extra = links.length ? `<p class="pk__src">Fonte: ${links.join(', ')}</p>` : '';
-    return `<p class="pk__meta"><code translate="no">commit ${r.h}</code><span>${r.date || brn}</span></p>
-      <p class="pk__br"><code translate="no">${r.kind === 'm' ? `merge · ${brn}` : r.kind === 'c' ? `${brn} · ${st.k.toLowerCase()}` : brn}</code>${(r.refs || []).map((x) => `<em class="ref">${x}</em>`).join('')}</p>
+    const kk = r.kind === 'c' ? `${s.titulo}, ${st.k.toLowerCase()}` : r.kind === 'm' ? s.titulo === r.title ? s.tipo : 'Formação' : r.kind === 'edu' ? 'Formação' : 'Carreira';
+    return `<p class="pk__meta"><span>${kk}</span>${r.date ? `<span>${r.date}</span>` : ''}</p>
       <div class="pk__vis">${vis}</div>
       <p class="pk__t">${r.kind === 'c' ? st.t : r.title || `${r.co}, ${r.role.toLowerCase()}`}</p>
       <p class="pk__d">${useP ? st.p.replace(/<a [^>]*>.*?<\/a>/g, '').trim() : r.kind === 'm' && SUM[r.set] ? SUM[r.set] : r.txt}</p>${extra}
@@ -223,7 +274,12 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
   /* ---------- linha do tempo (scrub) em escala real ---------- */
   const dated = G.filter((r) => r.y).sort((a, b) => a.y - b.y);
   const tr = $('.scrub__t'), th = $('.scrub__th'), yl = $('.scrub__y');
-  tr.insertAdjacentHTML('afterbegin', Array.from({ length: 12 }, (_, i) => `<b style="left:${(i / 11) * 100}%" class="${(2015 + i) % 5 === 0 || i === 11 ? 'big' : ''}"><span>${i === 11 ? 'hoje' : 2015 + i}</span></b>`).join('') + dated.map((r) => `<s style="left:${((r.y - 2015) / 11) * 100}%" class="${r.kind === 'edu' || r.edu ? 'edu' : ''}"></s>`).join(''));
+  // Rótulos só em 2015, 2020 e hoje — 2025 colidia com 'hoje' no celular.
+  tr.insertAdjacentHTML('afterbegin', Array.from({ length: 12 }, (_, i) => {
+    const end = i === 11, big = i === 0 || i === 5 || end;
+    const edge = i === 0 ? ' big--start' : end ? ' big--end' : '';
+    return `<b style="left:${(i / 11) * 100}%" class="${big ? `big${edge}` : ''}"><span>${end ? 'hoje' : 2015 + i}</span></b>`;
+  }).join('') + dated.map((r) => `<s style="left:${((r.y - 2015) / 11) * 100}%" class="${r.kind === 'edu' || r.edu ? 'edu' : ''}"></s>`).join(''));
   function yearAt(r) {
     if (r.y) return r.y; const idx = G.indexOf(r); const up = G.slice(0, idx).reverse().find((x) => x.y), dn = G.slice(idx).find((x) => x.y);
     return up && dn ? (up.y + dn.y) / 2 : (up || dn)?.y || 2026;
@@ -239,46 +295,15 @@ export function initHome({ SETS, setOf, openSet, EMAIL, VEJA }) {
   tr.addEventListener('pointerup', () => { sd = false; });
   tr.addEventListener('keydown', (e) => { const cur = +tr.getAttribute('aria-valuenow'); if (e.key === 'ArrowLeft') jumpYear(cur - 1); if (e.key === 'ArrowRight') jumpYear(cur + 1); });
 
-  /* ---------- terminal ---------- */
-  const out = $('.term__out'), inp = $('#cmd'); const hist = []; let hp = 0;
-  const say = (cmd, lines) => { out.insertAdjacentHTML('beforeend', `<p><span class="p">$</span> ${cmd.replace(/</g, '&lt;')}</p>${lines.map((l) => `<p class="o">${l}</p>`).join('')}`); while (out.children.length > 8) out.firstElementChild.remove(); out.scrollTop = out.scrollHeight; };
-  const branches = ['main', ...Object.values(BR)];
-  const findRow = (arg) => { const a = norm(arg || ''); const b = BYBR[a] || Object.keys(BR).find((k) => k === a); if (b) return G.find((r) => r.merge === b) || G.find((r) => r.br === b); return G.find((r) => r.h.startsWith(a) && a.length >= 4); };
+  /* ---------- atalhos para os testes: mostrar a prévia ou abrir a história de um projeto ---------- */
   const goTo = (r) => scrollTo({ top: gTop + ys[r.i] - innerHeight * 0.4, behavior: reduce ? 'instant' : 'smooth' });
-  function run(raw) {
-    const cmd = raw.trim().replace(/\s+/g, ' '); if (!cmd) return; hist.push(cmd); hp = hist.length;
-    const [g, sub, ...rest] = cmd.split(' '); const arg = rest.join(' ');
-    if (cmd === 'help') return say(cmd, ['<b>git log</b> mostra tudo · <b>git log --tag=time</b> filtra', '<b>git show shorts-hls</b> abre a prévia · <b>git checkout pelos-caminhos</b> abre a história', '<b>git branch</b> lista as branches · <b>whoami</b> · <b>clear</b>']);
-    if (cmd === 'clear') { out.innerHTML = ''; return; }
-    if (cmd === 'whoami') return say(cmd, ['Lucas Gehlen, Tech Lead do PilarHomes. Caxias do Sul.']);
-    if (g !== 'git') return say(cmd, [`comando não encontrado: ${g.replace(/</g, '&lt;')}. Tente <b>help</b>.`]);
-    if (sub === 'log') {
-      const m = cmd.match(/--tag[= ]([\wçãéáíóõ-]+)/i);
-      if (!m) { const n = setTag('Tudo'); goTo(G[0]); return say(cmd, [`${n} commits. Sem filtro.`]); }
-      const t = FILTERS.find((f) => norm(f) === norm(m[1])); if (!t) return say(cmd, [`tag desconhecida. Use: ${FILTERS.slice(1).map((f) => norm(f)).join(', ')}.`]);
-      const n = setTag(t); goTo(G.find((r) => !hiddenRow(r))); return say(cmd, [`${n} commits com a tag ${t}.`]);
-    }
-    if (sub === 'branch') return say(cmd, [branches.map((b) => (b === 'main' ? `<b>* ${b}</b>` : b)).join(' · ')]);
-    if (sub === 'show') { const r = findRow(arg); if (!r) return say(cmd, [`não achei "${arg.replace(/</g, '&lt;')}". Tente <b>git branch</b>.`]); setTag('Tudo'); goTo(r); if (wide()) { hoverRow = r; showPeek(r); setTimeout(() => (hoverRow = null), 1600); } else openSheet(r); return say(cmd, [`commit ${r.h} · ${r.title || r.msg || r.co}`]); }
-    if (sub === 'checkout' || sub === 'switch') { const r = findRow(arg); if (!r) return say(cmd, [`branch "${arg.replace(/</g, '&lt;')}" não existe. Tente <b>git branch</b>.`]); say(cmd, [`Switched to branch '${BR[r.br] || r.br}'`]); openSet(r.set, r.s); return; }
-    if (sub === 'blame') return say(cmd, ['Lucas Gehlen, linha por linha, desde 2015.']);
-    say(cmd, ['esse comando não roda aqui. Tente <b>help</b>.']);
-  }
-  $('.term__in').addEventListener('submit', (e) => { e.preventDefault(); run(inp.value); inp.value = ''; });
-  inp.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowUp') { hp = Math.max(0, hp - 1); inp.value = hist[hp] || ''; e.preventDefault(); }
-    if (e.key === 'ArrowDown') { hp = Math.min(hist.length, hp + 1); inp.value = hist[hp] || ''; e.preventDefault(); }
-    if (e.key === 'Tab') { const v = inp.value, w = v.split(' ').pop(); const m = [...branches, 'arquitetura', 'produto', 'formacao', 'carreira'].find((b) => w && b.startsWith(w)); if (m) { inp.value = v.slice(0, v.length - w.length) + m; e.preventDefault(); } }
-  });
-  document.querySelectorAll('[data-cmd]').forEach((b) => b.addEventListener('click', () => { const c = b.dataset.cmd; if (reduce) return run(c); let i = 0; inp.value = ''; const t = setInterval(() => { inp.value = c.slice(0, ++i); if (i >= c.length) { clearInterval(t); setTimeout(() => { run(c); inp.value = ''; }, 140); } }, 22); }));
-
-  /* ---------- rodapé ---------- */
-  const msg = $('#msg');
-  msg.addEventListener('input', () => { const v = msg.value || 'oi, Lucas'; $('.foot__msg').textContent = v; $('.foot__send').href = `mailto:${EMAIL}?subject=${encodeURIComponent(v)}`; });
+  const rowOfSet = (id) => G.find((r) => r.merge === id) || G.find((r) => r.set === id);
+  const show = (id) => { const r = rowOfSet(id); if (!r) return; setTag('Tudo'); goTo(r); if (wide()) { hoverRow = r; showPeek(r); setTimeout(() => (hoverRow = null), 1600); } else openSheet(r); };
 
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden && $('#st').hidden) closeSheet(); });
   let lastW = innerWidth; addEventListener('resize', () => { if (innerWidth !== lastW) { lastW = innerWidth; layout(); } });
-  const align = () => { const ANC = { c: 'code', m: '.m__git', tag: '.t__ref', era: '.e__p', edu: '.m__git' }; let worst = 0, at = null; G.forEach((r) => { const n = nodes.querySelector(`[data-row="${r.i}"] .n-dot`).getBoundingClientRect(), a = list.querySelector(`[data-row="${r.i}"] ${ANC[r.kind]}`).getBoundingClientRect(); const d = Math.abs((n.top + n.height / 2) - (a.top + a.height / 2)); if (d > worst) { worst = d; at = r.i; } }); return { worst: Math.round(worst * 10) / 10, at }; };
-  window.__home = { run, layout, setTag, align, rowY: (i) => gTop + ys[i], rows: ROWS };
-  return { start() { layout(); document.body.classList.add('ready'); if (wide()) showPeek(G[0]); } };
+  const align = () => { const ANC = { c: '.c__k', m: '.m__git', tag: '.t__ref', era: '.e__p', edu: '.m__k' }; let worst = 0, at = null; G.forEach((r) => { const n = nodes.querySelector(`[data-row="${r.i}"] .n-dot`).getBoundingClientRect(), a = list.querySelector(`[data-row="${r.i}"] ${ANC[r.kind]}`).getBoundingClientRect(); const d = Math.abs((n.top + n.height / 2) - (a.top + a.height / 2)); if (d > worst) { worst = d; at = r.i; } }); return { worst: Math.round(worst * 10) / 10, at }; };
+  window.__depoimentos = (lista) => { $('.dp-slot').innerHTML = depoimentos(lista); layout(); };
+  window.__home = { show, open: (id) => openSet(id, 0), layout, setTag, align, rowY: (i) => gTop + ys[i], rows: ROWS };
+  return { start() { layout(); initCafe(); document.body.classList.add('ready'); if (wide()) showPeek(G[0]); } };
 }
