@@ -3,6 +3,7 @@ dist/
 shots/
 test-report.json
 *.png
+!public/og/*.png
 *.webm
 *.mp4
 .env
