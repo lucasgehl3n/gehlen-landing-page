@@ -11,7 +11,7 @@ const FOLHA = 'https://www1.folha.uol.com.br/colunas/painelsa/2026/05/proptech-l
 const src = (u, n) => `<a href="${u}" target="_blank" rel="noopener">${n}</a>`;
 
 /* ---------- Conjuntos de stories ---------- */
-const NOTE = { k: 'Notas técnicas', t: 'Os detalhes ficam no blog', p: 'O texto técnico serve para qualquer time e não cita empresa nem produto.' };
+const NOTE = { k: 'Notas técnicas', t: 'A nota técnica fica à parte', p: 'O texto técnico serve para qualquer time e não cita empresa nem produto.' };
 const SETS = [
   { id: 'shorts', titulo: 'Shorts no PilarHomes', tipo: 'Projeto', icon: 'play2', tags: ['Produto', 'Arquitetura'], stories: [
     { k: 'Contexto e gargalo', t: 'Vídeo curto num portal de imóveis', p: 'Propus o Shorts no PilarHomes e levei a feature do estudo de mercado e dos benchmarks à entrega. Com o uso crescendo, o gargalo virou o tempo até o vídeo começar, sobretudo em rede fraca. Troque a rede e veja os segmentos chegando.', art: A.hlsTimeline },
